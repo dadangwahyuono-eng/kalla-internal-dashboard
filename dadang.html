@@ -1,0 +1,1976 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Logistik CPK Suite – Retase & Tonase</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #050816;
+      --card: #0b1220;
+      --card-soft: #111827;
+      --accent: #22c55e;
+      --accent-soft: rgba(34, 197, 94, 0.12);
+      --accent-blue: #3b82f6;
+      --accent-blue-soft: rgba(59, 130, 246, 0.16);
+      --text-main: #f9fafb;
+      --text-sub: #9ca3af;
+      --border-soft: #1f2937;
+      --danger: #f97373;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #111827 0, #020617 50%, #000 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1200px;
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(17, 24, 39, 0.98));
+      border-radius: 24px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      box-shadow: 0 22px 80px rgba(15, 23, 42, 0.9), 0 0 0 1px rgba(15, 23, 42, 0.7);
+      padding: 24px 24px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glow {
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(59, 130, 246, 0.18), transparent 60%),
+        radial-gradient(circle at 90% 20%, rgba(34, 197, 94, 0.18), transparent 55%);
+      opacity: 0.8;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .title-block h1 {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      color: var(--accent);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .title-block p {
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-top: 4px;
+    }
+
+    .pill {
+      font-size: 11px;
+      color: var(--text-sub);
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      padding: 6px 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 16px rgba(34, 197, 94, 0.9);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1.1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 960px) {
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .scroll {
+      padding-right: 4px;
+    }
+
+    .card {
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.96));
+      border-radius: 18px;
+      border: 1px solid var(--border-soft);
+      padding: 16px 14px 14px;
+      backdrop-filter: blur(26px);
+      margin-bottom: 10px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: #e5e7eb;
+    }
+
+    .card-sub {
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+
+    .tag {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--text-sub);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 10px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    @media (max-width: 720px) {
+      .grid-2,
+      .grid-3,
+      .grid-4 {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    label {
+      font-size: 11px;
+      font-weight: 500;
+      color: #e5e7eb;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .hint {
+      font-size: 10px;
+      color: var(--text-sub);
+    }
+
+    .input-wrap { position: relative; }
+
+    input,
+    select,
+    textarea,
+    button.capsule-btn {
+      font-family: inherit;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.85);
+      border-radius: 11px;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      padding: 9px 10px 8px;
+      padding-right: 34px;
+      font-size: 12px;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+      -moz-appearance: textfield;
+      resize: vertical;
+    }
+
+    textarea {
+      min-height: 90px;
+      padding-right: 10px;
+      font-size: 11px;
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #6b7280;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(34, 197, 94, 0.9);
+      box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.4);
+      background: rgba(15, 23, 42, 0.98);
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .suffix {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 10px;
+      color: #6b7280;
+      pointer-events: none;
+    }
+
+    select {
+      padding-right: 26px;
+      cursor: pointer;
+    }
+
+    .capsule-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .capsule,
+    .capsule-btn {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      color: var(--text-sub);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .capsule:hover,
+    .capsule-btn:hover {
+      border-color: rgba(148, 163, 184, 0.9);
+    }
+
+    .capsule.active {
+      background: var(--accent-soft);
+      border-color: rgba(34, 197, 94, 0.9);
+      color: var(--accent);
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px dashed rgba(55, 65, 81, 0.8);
+      margin: 12px 0 10px;
+    }
+
+    .results-main {
+      background: radial-gradient(circle at top left, rgba(22, 163, 74, 0.18), rgba(15, 23, 42, 0.95));
+      border-radius: 14px;
+      padding: 10px 12px 12px;
+      border: 1px solid rgba(34, 197, 94, 0.5);
+      margin-bottom: 10px;
+    }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .label-main {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: rgba(209, 250, 229, 0.9);
+    }
+
+    .value-main {
+      font-size: 22px;
+      font-weight: 600;
+      margin-top: 4px;
+      color: #bbf7d0;
+    }
+
+    .value-main span {
+      font-size: 11px;
+      margin-left: 4px;
+      opacity: 0.9;
+    }
+
+    .chip {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(34, 197, 94, 0.6);
+      color: rgba(190, 242, 100, 0.95);
+      background: rgba(22, 163, 74, 0.15);
+      white-space: nowrap;
+    }
+
+    .result-subgrid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .metric {
+      font-size: 11px;
+    }
+
+    .metric-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-sub);
+    }
+
+    .metric-value {
+      font-size: 13px;
+      margin-top: 2px;
+      font-weight: 500;
+    }
+
+    .metric-value span {
+      font-size: 10px;
+      margin-left: 4px;
+      color: var(--text-sub);
+    }
+
+    .result-side {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 14px;
+      padding: 10px 12px 12px;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 11px;
+      margin-bottom: 10px;
+    }
+
+    .result-side-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .result-side-label { color: var(--text-sub); }
+    .result-side-value { font-weight: 500; font-size: 11px; }
+
+    .compare-card {
+      background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.18), rgba(15, 23, 42, 0.96));
+      border-radius: 14px;
+      padding: 10px 12px 12px;
+      border: 1px solid rgba(59, 130, 246, 0.6);
+      margin-bottom: 10px;
+    }
+
+    .footer {
+      margin-top: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      font-size: 10px;
+      color: var(--text-sub);
+    }
+
+    @media (max-width: 720px) {
+      .footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    .dot-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.9);
+    }
+
+    .dot.green {
+      background: var(--accent);
+      box-shadow: 0 0 14px rgba(34, 197, 94, 0.9);
+    }
+
+    .error {
+      font-size: 10px;
+      color: var(--danger);
+      margin-top: 4px;
+      display: none;
+    }
+
+    .mode-pills {
+      display: inline-flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .mode-pill {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--text-sub);
+      cursor: pointer;
+    }
+
+    .mode-pill.active {
+      border-color: rgba(34, 197, 94, 0.9);
+      color: var(--accent);
+      background: rgba(34, 197, 94, 0.12);
+    }
+
+    .note-ok { color: var(--accent); }
+    .note-warn { color: #fbbf24; }
+    .note-bad { color: var(--danger); }
+
+    .truck-grid-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-sub);
+      margin-bottom: 4px;
+    }
+
+    .truck-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 6px;
+      font-size: 10px;
+    }
+
+    @media (max-width: 900px) {
+      .truck-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 600px) {
+      .truck-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .truck-cell {
+      border-radius: 10px;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      padding: 6px 7px;
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .truck-name {
+      font-size: 11px;
+      font-weight: 500;
+      margin-bottom: 3px;
+    }
+
+    .truck-line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+    }
+
+    .truck-line span:last-child {
+      font-weight: 500;
+    }
+
+    .btn-copy {
+      font-size: 11px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    .btn-copy:hover {
+      border-color: rgba(34, 197, 94, 0.9);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="glow"></div>
+
+    <div class="header">
+      <div class="title-block">
+        <h1>
+          Logistik CPK Suite
+          <span class="badge">CPK • Retase • Tonase</span>
+        </h1>
+        <p>Hitung CPK, retase, tonase, PP kosong, target profit, waktu & rit/hari realistis.</p>
+      </div>
+      <div class="pill">
+        <span class="pill-dot"></span>
+        Real-time &bull; 100% offline di browser
+      </div>
+    </div>
+
+    <div class="layout">
+      <!-- LEFT: INPUTS -->
+      <div class="scroll">
+        <!-- PROFIL TRUK + BBM -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Profil Truk & BBM</div>
+              <div class="card-sub">Pilih jenis truk, BBM, dan parameter dasar.</div>
+            </div>
+            <div class="tag">CPK Engine</div>
+          </div>
+
+          <div class="grid-2" style="margin-bottom:10px;">
+            <div class="field">
+              <label for="truckProfile">Profil Truk</label>
+              <div class="input-wrap">
+                <select id="truckProfile">
+                  <option value="custom">Custom / Manual</option>
+                  <option value="engkel">Engkel</option>
+                  <option value="cdd">CDD</option>
+                  <option value="fuso">Fuso</option>
+                  <option value="tronton">Tronton</option>
+                </select>
+              </div>
+              <div class="hint">Profil bisa diedit & disimpan (per browser).</div>
+            </div>
+            <div class="field">
+              <label>&nbsp;</label>
+              <div class="capsule-row">
+                <button type="button" class="capsule-btn" id="loadProfileBtn">Load</button>
+                <button type="button" class="capsule-btn" id="saveProfileBtn">Save</button>
+                <button type="button" class="capsule-btn" id="resetProfilesBtn">Reset default</button>
+              </div>
+              <div class="hint">Dipakai juga di perbandingan armada.</div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label for="bbmType">Profil BBM</label>
+              <div class="input-wrap">
+                <select id="bbmType">
+                  <option value="custom">Custom</option>
+                  <option value="biosolar">Solar Subsidi (Bio Solar)</option>
+                  <option value="dexlite">Dexlite</option>
+                  <option value="pertaminaDex">Pertamina Dex</option>
+                </select>
+              </div>
+              <div class="capsule-row">
+                <div class="capsule" data-bbm="biosolar">Solar subsidi</div>
+                <div class="capsule" data-bbm="dexlite">Dexlite</div>
+                <div class="capsule" data-bbm="pertaminaDex">Pertamina Dex</div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="fuelPrice">Harga BBM per Liter</label>
+              <div class="input-wrap">
+                <input id="fuelPrice" type="number" inputmode="decimal" placeholder="6800" />
+                <span class="suffix">Rp/L</span>
+              </div>
+              <div class="hint">Sesuaikan dengan harga SPBU aktual.</div>
+            </div>
+          </div>
+
+          <div class="grid-3" style="margin-top:10px;">
+            <div class="field">
+              <label for="kmPerLiter">Konsumsi BBM</label>
+              <div class="input-wrap">
+                <input id="kmPerLiter" type="number" inputmode="decimal" placeholder="6" />
+                <span class="suffix">km/L</span>
+              </div>
+              <div class="hint">Engkel ~6–8, Fuso ~3–5 km/L (asumsi kasar).</div>
+            </div>
+            <div class="field">
+              <label for="margin">Margin</label>
+              <div class="input-wrap">
+                <input id="margin" type="number" inputmode="decimal" placeholder="20" />
+                <span class="suffix">%</span>
+              </div>
+              <div class="hint">Margin di atas modal (retase per kg).</div>
+            </div>
+            <div class="field">
+              <label for="fuelIncrease">Skenario BBM</label>
+              <div class="input-wrap">
+                <input id="fuelIncrease" type="number" inputmode="decimal" placeholder="10" />
+                <span class="suffix">%</span>
+              </div>
+              <div class="hint">Untuk simulasi BBM naik.</div>
+            </div>
+          </div>
+
+          <hr class="divider" />
+
+          <div class="grid-2">
+            <div class="field">
+              <label for="routeName">Nama Rute</label>
+              <div class="input-wrap">
+                <input id="routeName" type="text" placeholder="Jakarta – Bandung" />
+              </div>
+              <div class="hint">Dipakai di preset rute & ringkasan WA.</div>
+            </div>
+            <div class="field">
+              <label for="routePreset">Preset Rute</label>
+              <div class="input-wrap">
+                <select id="routePreset">
+                  <option value="none">Tanpa preset</option>
+                </select>
+              </div>
+              <div class="capsule-row">
+                <button type="button" class="capsule-btn" id="saveRouteBtn">Save rute</button>
+                <button type="button" class="capsule-btn" id="deleteRouteBtn">Hapus</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NON-BBM DETAIL & WAKTU -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Biaya Non-BBM (Detail) & Waktu</div>
+              <div class="card-sub">Driver, uang jalan, tol, service & ban, demurrage, dan jam kerja.</div>
+            </div>
+            <div class="tag">Operational Detail</div>
+          </div>
+
+          <div class="grid-3">
+            <div class="field">
+              <label for="driverPerTrip">Gaji + lembur driver</label>
+              <div class="input-wrap">
+                <input id="driverPerTrip" type="number" inputmode="decimal" placeholder="150000" />
+                <span class="suffix">Rp/rit</span>
+              </div>
+              <div class="hint">Rata-rata per rit untuk rute ini.</div>
+            </div>
+            <div class="field">
+              <label for="uangJalanPerTrip">Uang jalan & makan</label>
+              <div class="input-wrap">
+                <input id="uangJalanPerTrip" type="number" inputmode="decimal" placeholder="100000" />
+                <span class="suffix">Rp/rit</span>
+              </div>
+            </div>
+            <div class="field">
+              <label for="tollPerTrip">Tol per rute</label>
+              <div class="input-wrap">
+                <input id="tollPerTrip" type="number" inputmode="decimal" placeholder="80000" />
+                <span class="suffix">Rp/rit</span>
+              </div>
+              <div class="hint">0 jika lewat non-tol.</div>
+            </div>
+          </div>
+
+          <div class="grid-3" style="margin-top:10px;">
+            <div class="field">
+              <label for="servicePerKm">Service & ban</label>
+              <div class="input-wrap">
+                <input id="servicePerKm" type="number" inputmode="decimal" placeholder="300" />
+                <span class="suffix">Rp/km</span>
+              </div>
+              <div class="hint">Disusutkan dari biaya service/ban bulanan.</div>
+            </div>
+            <div class="field">
+              <label for="nonFuelPerKm">Non-BBM lain</label>
+              <div class="input-wrap">
+                <input id="nonFuelPerKm" type="number" inputmode="decimal" placeholder="200" />
+                <span class="suffix">Rp/km</span>
+              </div>
+              <div class="hint">Admin, parkir, dll (per km).</div>
+            </div>
+            <div class="field">
+              <label for="hoursPerDay">Jam kerja/hari</label>
+              <div class="input-wrap">
+                <input id="hoursPerDay" type="number" inputmode="decimal" placeholder="14" />
+                <span class="suffix">jam</span>
+              </div>
+              <div class="hint">Max jam operasi (driving + bongkar).</div>
+            </div>
+          </div>
+
+          <hr class="divider" />
+
+          <div class="grid-3">
+            <div class="field">
+              <label for="avgSpeed">Kecepatan rata-rata</label>
+              <div class="input-wrap">
+                <input id="avgSpeed" type="number" inputmode="decimal" placeholder="40" />
+                <span class="suffix">km/jam</span>
+              </div>
+              <div class="hint">Sudah termasuk faktor macet.</div>
+            </div>
+            <div class="field">
+              <label for="loadUnloadHours">Bongkar & muat</label>
+              <div class="input-wrap">
+                <input id="loadUnloadHours" type="number" inputmode="decimal" placeholder="3" />
+                <span class="suffix">jam/rit</span>
+              </div>
+            </div>
+            <div class="field">
+              <label for="demurrageHours">Demurrage</label>
+              <div class="input-wrap">
+                <input id="demurrageHours" type="number" inputmode="decimal" placeholder="0" />
+                <span class="suffix">jam/rit</span>
+              </div>
+              <div class="hint">Jam ekstra di luar free time.</div>
+            </div>
+          </div>
+
+          <div class="grid-3" style="margin-top:10px;">
+            <div class="field">
+              <label for="demurrageRate">Tarif demurrage</label>
+              <div class="input-wrap">
+                <input id="demurrageRate" type="number" inputmode="decimal" placeholder="50000" />
+                <span class="suffix">Rp/jam</span>
+              </div>
+              <div class="hint">Jika tidak dihitung, isi 0.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TRIP & ROUND TRIP -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Trip & Round Trip</div>
+              <div class="card-sub">Hitung rit sekali jalan dan PP (pulang kosong atau isi).</div>
+            </div>
+            <div class="tag">Trip Config</div>
+          </div>
+
+          <div class="grid-3">
+            <div class="field">
+              <label for="distance">Jarak Pergi</label>
+              <div class="input-wrap">
+                <input id="distance" type="number" inputmode="decimal" placeholder="120" />
+                <span class="suffix">km</span>
+              </div>
+            </div>
+            <div class="field">
+              <label for="distanceBack">Jarak Pulang</label>
+              <div class="input-wrap">
+                <input id="distanceBack" type="number" inputmode="decimal" placeholder="120" />
+                <span class="suffix">km</span>
+              </div>
+              <div class="hint">Isi 0 jika hitung sekali jalan saja.</div>
+            </div>
+            <div class="field">
+              <label for="minPayload">Muatan Full</label>
+              <div class="input-wrap">
+                <input id="minPayload" type="number" inputmode="decimal" placeholder="700" />
+                <span class="suffix">kg</span>
+              </div>
+              <div class="hint">Kapasitas ideal / target full load.</div>
+            </div>
+          </div>
+
+          <div class="grid-3" style="margin-top:10px;">
+            <div class="field">
+              <label for="payload">Muatan Pergi</label>
+              <div class="input-wrap">
+                <input id="payload" type="number" inputmode="decimal" placeholder="700" />
+                <span class="suffix">kg</span>
+              </div>
+            </div>
+            <div class="field">
+              <label for="payloadBack">Muatan Pulang</label>
+              <div class="input-wrap">
+                <input id="payloadBack" type="number" inputmode="decimal" placeholder="0" />
+                <span class="suffix">kg</span>
+              </div>
+              <div class="hint">0 = pulang kosong.</div>
+            </div>
+            <div class="field">
+              <label for="tonaseRate">Tarif Tonase</label>
+              <div class="input-wrap">
+                <input id="tonaseRate" type="number" inputmode="decimal" placeholder="1500" />
+                <span class="suffix">Rp/kg</span>
+              </div>
+              <div class="hint">Tarif katalog / kontrak.</div>
+            </div>
+          </div>
+
+          <div class="grid-3" style="margin-top:10px;">
+            <div class="field">
+              <label for="tonaseMinWeight">Minimum Tonase</label>
+              <div class="input-wrap">
+                <input id="tonaseMinWeight" type="number" inputmode="decimal" placeholder="0" />
+                <span class="suffix">kg</span>
+              </div>
+              <div class="hint">Jika ada minimum charge tonase.</div>
+            </div>
+            <div class="field">
+              <label for="profitTarget">Target Profit/Bulan</label>
+              <div class="input-wrap">
+                <input id="profitTarget" type="number" inputmode="decimal" placeholder="20000000" />
+                <span class="suffix">Rp</span>
+              </div>
+            </div>
+            <div class="field">
+              <label for="workDays">Hari & Rit/Hari</label>
+              <div class="input-wrap">
+                <input id="workDays" type="number" inputmode="decimal" placeholder="24" />
+                <span class="suffix">hari/bln</span>
+              </div>
+              <div class="capsule-row">
+                <div class="capsule" id="tripsPerDay1">1 rit/hari</div>
+                <div class="capsule" id="tripsPerDay2">2 rit/hari</div>
+                <div class="capsule" id="tripsPerDay3">3 rit/hari</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field" style="margin-top:8px;">
+            <label for="tripsPerDayInput">Rit per Hari (manual)</label>
+            <div class="input-wrap">
+              <input id="tripsPerDayInput" type="number" inputmode="decimal" placeholder="1" />
+              <span class="suffix">rit/hari</span>
+            </div>
+          </div>
+
+          <div id="error" class="error">Lengkapi BBM, km/L, jarak pergi, muatan pergi minimal, supaya kalkulasi valid.</div>
+        </div>
+
+        <!-- SIMULASI LOAD FACTOR -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Simulasi Load Factor</div>
+              <div class="card-sub">Lihat dampak 30%–100% muatan terhadap biaya/kg.</div>
+            </div>
+            <div class="tag">Load Factor</div>
+          </div>
+
+          <div class="grid-4">
+            <div class="field">
+              <label>30% Load</label>
+              <div class="hint" id="lf30Text">-</div>
+            </div>
+            <div class="field">
+              <label>50% Load</label>
+              <div class="hint" id="lf50Text">-</div>
+            </div>
+            <div class="field">
+              <label>70% Load</label>
+              <div class="hint" id="lf70Text">-</div>
+            </div>
+            <div class="field">
+              <label>100% Load</label>
+              <div class="hint" id="lf100Text">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: RESULTS -->
+      <div class="scroll">
+        <!-- CPK & RETASE -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Hasil CPK & Retase (Pergi)</div>
+              <div class="card-sub">CPK, total biaya trip, dan tarif retase per kg.</div>
+            </div>
+            <div class="tag" id="modeDisplay">Retase fokus</div>
+          </div>
+
+          <div class="results-main">
+            <div class="result-header">
+              <div>
+                <div class="label-main">CPK (Cost per Kilometer)</div>
+                <div id="cpkValue" class="value-main">Rp 0<span>/km</span></div>
+              </div>
+              <div class="chip" id="fuelPerKmChip">BBM: Rp 0 / km</div>
+            </div>
+
+            <div class="result-subgrid">
+              <div class="metric">
+                <div class="metric-label">Total Biaya Trip (Pergi)</div>
+                <div class="metric-value" id="totalTripCost">Rp 0<span>/rit</span></div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Modal per kg (Pergi)</div>
+                <div class="metric-value" id="costPerKg">Rp 0<span>/kg</span></div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Harga jual per kg (Pergi)</div>
+                <div class="metric-value" id="sellPerKg">Rp 0<span>/kg</span></div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Tarif jual setara per km</div>
+                <div class="metric-value" id="tariffPerKm">Rp 0<span>/km</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="result-side">
+            <div class="result-side-row">
+              <div class="result-side-label">CPK BBM murni</div>
+              <div class="result-side-value" id="fuelPerKm">Rp 0 / km</div>
+            </div>
+            <div class="result-side-row">
+              <div class="result-side-label">CPK Non-BBM (efektif)</div>
+              <div class="result-side-value" id="nonFuelDisplay">Rp 0 / km</div>
+            </div>
+            <div class="result-side-row">
+              <div class="result-side-label">Non-BBM trip (driver+uang jln+tol+svc+demurrage)</div>
+              <div class="result-side-value" id="nonFuelTripDisplay">Rp 0 / rit</div>
+            </div>
+            <div class="result-side-row">
+              <div class="result-side-label">Jarak pergi</div>
+              <div class="result-side-value" id="distanceDisplay">0 km</div>
+            </div>
+            <div class="result-side-row">
+              <div class="result-side-label">Muatan pergi</div>
+              <div class="result-side-value" id="payloadDisplay">0 kg</div>
+            </div>
+            <div class="result-side-row">
+              <div class="result-side-label">Muatan full</div>
+              <div class="result-side-value" id="fullLoadDisplay">0 kg</div>
+            </div>
+            <div class="result-side-row">
+              <div class="result-side-label">Underload factor</div>
+              <div class="result-side-value" id="underloadDisplay">-</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ROUND TRIP, PROFIT & WAKTU -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Round Trip, Target Profit & Waktu</div>
+              <div class="card-sub">PP, pulang kosong/isi, profit bulanan, jam trip & rit/hari realistis.</div>
+            </div>
+            <div class="tag">PP • Profit • Time</div>
+          </div>
+
+          <div class="results-main" style="background: radial-gradient(circle at top left, rgba(34,197,94,0.18), rgba(15,23,42,0.95)); border-color: rgba(34,197,94,0.7);">
+            <div class="result-header">
+              <div>
+                <div class="label-main">Round Trip (Pergi + Pulang)</div>
+                <div id="rtHeadline" class="value-main">Rp 0<span>/PP</span></div>
+              </div>
+              <div class="chip" id="rtDistanceChip">0 km total</div>
+            </div>
+
+            <div class="result-subgrid">
+              <div class="metric">
+                <div class="metric-label">Total biaya PP</div>
+                <div class="metric-value" id="rtTotalCost">Rp 0<span>/PP</span></div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Tarif jual PP (retase sekarang)</div>
+                <div class="metric-value" id="rtRevenue">Rp 0<span>/PP</span></div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Profit per PP (estimasi)</div>
+                <div class="metric-value" id="rtProfit">Rp 0<span>/PP</span></div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">CPK efektif PP</div>
+                <div class="metric-value" id="rtCpkEff">Rp 0<span>/km</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="result-side">
+            <div class="result-side-row">
+              <div class="result-side-label">Target profit/trip (dari target bulanan)</div>
+              <div class="result-side-value" id="profitPerTripNeeded">Rp 0 / rit</div>
+            </div>
+            <div class="result-side-row">
+              <div class="result-side-label">Profit/trip saat ini (pergi saja)</div>
+              <div class="result-side-value" id="profitPerTripCurrent">Rp 0 / rit</div>
+            </div>
+            <div class="result-side-row">
+              <div class="result-side-label">Tarif/kg minimal utk capai target</div>
+              <div class="result-side-value" id="requiredSellPerKg">Rp 0 / kg</div>
+            </div>
+            <div class="result-side-row">
+              <div class="result-side-label">Margin% minimal</div>
+              <div class="result-side-value" id="requiredMarginPct">0 %</div>
+            </div>
+            <div class="result-side-row">
+              <div class="result-side-label">Jam trip (pergi, estimasi)</div>
+              <div class="result-side-value" id="tripHoursDisplay">0 jam/rit</div>
+            </div>
+            <div class="result-side-row">
+              <div class="result-side-label">Cost per hour (pergi)</div>
+              <div class="result-side-value" id="costPerHourDisplay">Rp 0 / jam</div>
+            </div>
+            <div class="result-side-row">
+              <div class="result-side-label">Rit/hari realistis (maks)</div>
+              <div class="result-side-value" id="realisticTripsDisplay">0 rit/hari</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TONASE VS RETASE -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Tonase vs Retase</div>
+              <div class="card-sub">Bandingkan tarif tonase dengan retase berbasis CPK.</div>
+            </div>
+            <div class="mode-pills">
+              <div class="mode-pill active" id="retaseModePill">Retase</div>
+              <div class="mode-pill" id="compareModePill">Bandingkan</div>
+            </div>
+          </div>
+
+          <div class="compare-card">
+            <div class="result-header">
+              <div>
+                <div class="label-main">Perbandingan Total Trip (Pergi)</div>
+                <div id="compareHeadline" class="value-main">Rp 0<span>/rit</span></div>
+              </div>
+              <div class="chip" id="compareChip">Menunggu input...</div>
+            </div>
+
+            <div class="result-subgrid">
+              <div class="metric">
+                <div class="metric-label">Tonase (trip)</div>
+                <div class="metric-value" id="tonaseTripPrice">Rp 0<span>/rit</span></div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Retase (trip)</div>
+                <div class="metric-value" id="retaseTripPrice">Rp 0<span>/rit</span></div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Tonase efektif/kg</div>
+                <div class="metric-value" id="tonasePerKgEff">Rp 0<span>/kg</span></div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Selisih trip (tonase - retase)</div>
+                <div class="metric-value" id="diffTripPrice">Rp 0<span>/rit</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="result-side">
+            <div class="result-side-row">
+              <div class="result-side-label">Berat ditagih (tonase)</div>
+              <div class="result-side-value" id="tonaseBillableWeight">0 kg</div>
+            </div>
+            <div class="result-side-row">
+              <div class="result-side-label">Status perbandingan</div>
+              <div class="result-side-value" id="tonaseVsRetaseNote">-</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- WHAT-IF BBM & ARMADA COMPARE -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Skenario BBM & Perbandingan Armada</div>
+              <div class="card-sub">Dampak kenaikan BBM + efisiensi Engkel–Tronton di rute yang sama.</div>
+            </div>
+            <div class="tag">Scenario & Fleet</div>
+          </div>
+
+          <div class="results-main" style="background: radial-gradient(circle at top left, var(--accent-blue-soft), rgba(15,23,42,0.96)); border-color: rgba(59,130,246,0.7);">
+            <div class="result-header">
+              <div>
+                <div class="label-main">Skenario kenaikan BBM</div>
+                <div id="fuelScenarioHeadline" class="value-main">Rp 0<span>/km</span></div>
+              </div>
+              <div class="chip" id="fuelScenarioChip">BBM +0%</div>
+            </div>
+
+            <div class="result-subgrid">
+              <div class="metric">
+                <div class="metric-label">CPK sekarang</div>
+                <div class="metric-value" id="currentCpkScenario">Rp 0<span>/km</span></div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">CPK skenario</div>
+                <div class="metric-value" id="newCpkScenario">Rp 0<span>/km</span></div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Tarif/kg sekarang</div>
+                <div class="metric-value" id="currentSellScenario">Rp 0<span>/kg</span></div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Tarif/kg skenario</div>
+                <div class="metric-value" id="newSellScenario">Rp 0<span>/kg</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="truck-grid-label">Perbandingan armada (pakai profil Engkel–Tronton, rute & BBM saat ini)</div>
+          <div class="truck-grid">
+            <div class="truck-cell">
+              <div class="truck-name">Engkel</div>
+              <div class="truck-line"><span>CPK</span><span id="engkelCpk">Rp 0/km</span></div>
+              <div class="truck-line"><span>Tarif jual/kg</span><span id="engkelSell">Rp 0</span></div>
+            </div>
+            <div class="truck-cell">
+              <div class="truck-name">CDD</div>
+              <div class="truck-line"><span>CPK</span><span id="cddCpk">Rp 0/km</span></div>
+              <div class="truck-line"><span>Tarif jual/kg</span><span id="cddSell">Rp 0</span></div>
+            </div>
+            <div class="truck-cell">
+              <div class="truck-name">Fuso</div>
+              <div class="truck-line"><span>CPK</span><span id="fusoCpk">Rp 0/km</span></div>
+              <div class="truck-line"><span>Tarif jual/kg</span><span id="fusoSell">Rp 0</span></div>
+            </div>
+            <div class="truck-cell">
+              <div class="truck-name">Tronton</div>
+              <div class="truck-line"><span>CPK</span><span id="trontonCpk">Rp 0/km</span></div>
+              <div class="truck-line"><span>Tarif jual/kg</span><span id="trontonSell">Rp 0</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- WHATSAPP SUMMARY -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Ringkasan untuk WhatsApp</div>
+              <div class="card-sub">Auto-generate teks untuk dikirim ke owner/admin/customer.</div>
+            </div>
+            <div class="tag">WA Export</div>
+          </div>
+
+          <div class="field">
+            <label for="waText">Ringkasan</label>
+            <textarea id="waText" readonly></textarea>
+          </div>
+          <div class="footer">
+            <div class="dot-row">
+              <div class="dot green"></div>
+              <span>Tekan tombol copy lalu paste di WhatsApp.</span>
+            </div>
+            <button type="button" class="btn-copy" id="copyWaBtn">Copy ke clipboard</button>
+          </div>
+        </div>
+
+        <div class="footer">
+          <div class="dot-row">
+            <div class="dot green"></div>
+            <span>Kalibrasi dengan data real (BBM, service, tol, jam kerja) agar CPK akurat.</span>
+          </div>
+          <div class="dot-row">
+            <div class="dot"></div>
+            <span>Semua data (profil truk & rute) hanya tersimpan lokal di browser ini.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================== SCRIPT ===================== -->
+  <script>
+    const fmt = new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      maximumFractionDigits: 0,
+      minimumFractionDigits: 0,
+    });
+
+    const $ = (id) => document.getElementById(id);
+    const parseNum = (el) => {
+      if (!el) return 0;
+      const v = parseFloat(el.value);
+      return isNaN(v) ? 0 : v;
+    };
+
+    // ==== INPUT ELEMENTS ====
+    const fuelPriceEl = $("fuelPrice");
+    const kmPerLiterEl = $("kmPerLiter");
+    const marginEl = $("margin");
+    const fuelIncreaseEl = $("fuelIncrease");
+
+    const driverPerTripEl = $("driverPerTrip");
+    const uangJalanPerTripEl = $("uangJalanPerTrip");
+    const tollPerTripEl = $("tollPerTrip");
+    const servicePerKmEl = $("servicePerKm");
+    const nonFuelPerKmEl = $("nonFuelPerKm");
+    const hoursPerDayEl = $("hoursPerDay");
+
+    const avgSpeedEl = $("avgSpeed");
+    const loadUnloadHoursEl = $("loadUnloadHours");
+    const demurrageHoursEl = $("demurrageHours");
+    const demurrageRateEl = $("demurrageRate");
+
+    const distanceEl = $("distance");
+    const distanceBackEl = $("distanceBack");
+    const payloadEl = $("payload");
+    const payloadBackEl = $("payloadBack");
+    const minPayloadEl = $("minPayload");
+
+    const tonaseRateEl = $("tonaseRate");
+    const tonaseMinWeightEl = $("tonaseMinWeight");
+
+    const profitTargetEl = $("profitTarget");
+    const workDaysEl = $("workDays");
+    const tripsPerDayInputEl = $("tripsPerDayInput");
+
+    const routeNameEl = $("routeName");
+    const routePresetEl = $("routePreset");
+    const saveRouteBtn = $("saveRouteBtn");
+    const deleteRouteBtn = $("deleteRouteBtn");
+
+    const bbmTypeEl = $("bbmType");
+    const capsulesBbm = document.querySelectorAll(".capsule[data-bbm]");
+
+    const truckProfileEl = $("truckProfile");
+    const loadProfileBtn = $("loadProfileBtn");
+    const saveProfileBtn = $("saveProfileBtn");
+    const resetProfilesBtn = $("resetProfilesBtn");
+
+    const tripsPerDay1 = $("tripsPerDay1");
+    const tripsPerDay2 = $("tripsPerDay2");
+    const tripsPerDay3 = $("tripsPerDay3");
+
+    const errorEl = $("error");
+
+    // ==== OUTPUT ELEMENTS ====
+    const cpkValueEl = $("cpkValue");
+    const fuelPerKmChipEl = $("fuelPerKmChip");
+    const totalTripCostEl = $("totalTripCost");
+    const costPerKgEl = $("costPerKg");
+    const sellPerKgEl = $("sellPerKg");
+    const tariffPerKmEl = $("tariffPerKm");
+
+    const fuelPerKmEl = $("fuelPerKm");
+    const nonFuelDisplayEl = $("nonFuelDisplay");
+    const nonFuelTripDisplayEl = $("nonFuelTripDisplay");
+    const distanceDisplayEl = $("distanceDisplay");
+    const payloadDisplayEl = $("payloadDisplay");
+    const fullLoadDisplayEl = $("fullLoadDisplay");
+    const underloadDisplayEl = $("underloadDisplay");
+
+    const rtHeadlineEl = $("rtHeadline");
+    const rtDistanceChipEl = $("rtDistanceChip");
+    const rtTotalCostEl = $("rtTotalCost");
+    const rtRevenueEl = $("rtRevenue");
+    const rtProfitEl = $("rtProfit");
+    const rtCpkEffEl = $("rtCpkEff");
+
+    const profitPerTripNeededEl = $("profitPerTripNeeded");
+    const profitPerTripCurrentEl = $("profitPerTripCurrent");
+    const requiredSellPerKgEl = $("requiredSellPerKg");
+    const requiredMarginPctEl = $("requiredMarginPct");
+    const tripHoursDisplayEl = $("tripHoursDisplay");
+    const costPerHourDisplayEl = $("costPerHourDisplay");
+    const realisticTripsDisplayEl = $("realisticTripsDisplay");
+
+    const retaseModePill = $("retaseModePill");
+    const compareModePill = $("compareModePill");
+    const modeDisplayEl = $("modeDisplay");
+
+    const compareHeadlineEl = $("compareHeadline");
+    const compareChipEl = $("compareChip");
+    const tonaseTripPriceEl = $("tonaseTripPrice");
+    const retaseTripPriceEl = $("retaseTripPrice");
+    const tonasePerKgEffEl = $("tonasePerKgEff");
+    const diffTripPriceEl = $("diffTripPrice");
+    const tonaseBillableWeightEl = $("tonaseBillableWeight");
+    const tonaseVsRetaseNoteEl = $("tonaseVsRetaseNote");
+
+    const lf30TextEl = $("lf30Text");
+    const lf50TextEl = $("lf50Text");
+    const lf70TextEl = $("lf70Text");
+    const lf100TextEl = $("lf100Text");
+
+    const fuelScenarioHeadlineEl = $("fuelScenarioHeadline");
+    const fuelScenarioChipEl = $("fuelScenarioChip");
+    const currentCpkScenarioEl = $("currentCpkScenario");
+    const newCpkScenarioEl = $("newCpkScenario");
+    const currentSellScenarioEl = $("currentSellScenario");
+    const newSellScenarioEl = $("newSellScenario");
+
+    const engkelCpkEl = $("engkelCpk");
+    const engkelSellEl = $("engkelSell");
+    const cddCpkEl = $("cddCpk");
+    const cddSellEl = $("cddSell");
+    const fusoCpkEl = $("fusoCpk");
+    const fusoSellEl = $("fusoSell");
+    const trontonCpkEl = $("trontonCpk");
+    const trontonSellEl = $("trontonSell");
+
+    const waTextEl = $("waText");
+    const copyWaBtn = $("copyWaBtn");
+
+    // ==== DEFAULT PROFILES ====
+    const defaultProfiles = {
+      engkel: {
+        label: "Engkel",
+        bbmType: "biosolar",
+        fuelPrice: 6800,
+        kmPerLiter: 7,
+        margin: 20,
+        distance: 120,
+        payload: 3000,
+        minPayload: 3000
+      },
+      cdd: {
+        label: "CDD",
+        bbmType: "biosolar",
+        fuelPrice: 6800,
+        kmPerLiter: 6,
+        margin: 20,
+        distance: 120,
+        payload: 5000,
+        minPayload: 5000
+      },
+      fuso: {
+        label: "Fuso",
+        bbmType: "dexlite",
+        fuelPrice: 14300,
+        kmPerLiter: 4,
+        margin: 22,
+        distance: 120,
+        payload: 8000,
+        minPayload: 8000
+      },
+      tronton: {
+        label: "Tronton",
+        bbmType: "dexlite",
+        fuelPrice: 14300,
+        kmPerLiter: 3.5,
+        margin: 25,
+        distance: 120,
+        payload: 15000,
+        minPayload: 15000
+      }
+    };
+
+    function loadStoredProfiles() {
+      try {
+        const raw = localStorage.getItem("truckProfiles");
+        if (!raw) return { ...defaultProfiles };
+        const parsed = JSON.parse(raw);
+        return { ...defaultProfiles, ...parsed };
+      } catch {
+        return { ...defaultProfiles };
+      }
+    }
+    let truckProfiles = loadStoredProfiles();
+
+    function storeProfiles() {
+      try { localStorage.setItem("truckProfiles", JSON.stringify(truckProfiles)); } catch {}
+    }
+
+    function applyProfile(name) {
+      const p = truckProfiles[name];
+      if (!p) return;
+
+      bbmTypeEl.value = p.bbmType || "custom";
+      updateFromBbmType(false);
+      if (p.fuelPrice) fuelPriceEl.value = p.fuelPrice;
+      if (p.kmPerLiter) kmPerLiterEl.value = p.kmPerLiter;
+      if (p.margin != null) marginEl.value = p.margin;
+      if (p.distance) distanceEl.value = p.distance;
+      if (p.payload) payloadEl.value = p.payload;
+      if (p.minPayload) minPayloadEl.value = p.minPayload;
+
+      capsulesBbm.forEach((c) => {
+        c.classList.toggle("active", c.dataset.bbm === bbmTypeEl.value);
+      });
+
+      compute();
+    }
+
+    function saveCurrentToProfile(name) {
+      if (!defaultProfiles[name]) return;
+      truckProfiles[name] = {
+        label: defaultProfiles[name].label,
+        bbmType: bbmTypeEl.value,
+        fuelPrice: parseNum(fuelPriceEl),
+        kmPerLiter: parseNum(kmPerLiterEl),
+        margin: parseNum(marginEl),
+        distance: parseNum(distanceEl),
+        payload: parseNum(payloadEl),
+        minPayload: parseNum(minPayloadEl)
+      };
+      storeProfiles();
+    }
+
+    function resetProfiles() {
+      truckProfiles = { ...defaultProfiles };
+      storeProfiles();
+      const current = truckProfileEl.value;
+      if (current !== "custom") applyProfile(current);
+      else compute();
+    }
+
+    // ==== ROUTE PRESETS ====
+    function loadRoutePresets() {
+      try {
+        const raw = localStorage.getItem("routePresets");
+        if (!raw) return {};
+        return JSON.parse(raw);
+      } catch { return {}; }
+    }
+    let routePresets = loadRoutePresets();
+
+    function storeRoutePresets() {
+      try { localStorage.setItem("routePresets", JSON.stringify(routePresets)); } catch {}
+    }
+
+    function refreshRoutePresetOptions() {
+      while (routePresetEl.options.length > 1) routePresetEl.remove(1);
+      Object.keys(routePresets).forEach((key) => {
+        const opt = document.createElement("option");
+        opt.value = key;
+        opt.textContent = routePresets[key].name || key;
+        routePresetEl.appendChild(opt);
+      });
+    }
+
+    function applyRoutePreset(key) {
+      const r = routePresets[key];
+      if (!r) return;
+      routeNameEl.value = r.name || "";
+      distanceEl.value = r.distance ?? distanceEl.value;
+      distanceBackEl.value = r.distanceBack ?? distanceBackEl.value;
+      tonaseRateEl.value = r.tonaseRate ?? tonaseRateEl.value;
+      tonaseMinWeightEl.value = r.tonaseMinWeight ?? tonaseMinWeightEl.value;
+      compute();
+    }
+
+    // ==== BBM TYPE ====
+    function updateFromBbmType(setPrice = true) {
+      const type = bbmTypeEl.value;
+      let price = parseNum(fuelPriceEl);
+      if (setPrice) {
+        if (type === "biosolar") price = 6800;
+        else if (type === "dexlite") price = 14300;
+        else if (type === "pertaminaDex") price = 15000;
+        if (type !== "custom") fuelPriceEl.value = price;
+      }
+      capsulesBbm.forEach((c) => c.classList.toggle("active", c.dataset.bbm === type));
+      compute();
+    }
+
+    // ==== MODE PILL ====
+    function setMode(mode) {
+      if (mode === "retase") {
+        retaseModePill.classList.add("active");
+        compareModePill.classList.remove("active");
+        modeDisplayEl.textContent = "Retase fokus";
+      } else {
+        compareModePill.classList.add("active");
+        retaseModePill.classList.remove("active");
+        modeDisplayEl.textContent = "Bandingkan tonase vs retase";
+      }
+    }
+
+    // ==== MAIN COMPUTE ====
+    function compute() {
+      const fuelPrice = parseNum(fuelPriceEl);
+      const kmPerLiter = parseNum(kmPerLiterEl);
+      const marginPct = parseNum(marginEl);
+      const fuelIncreasePct = parseNum(fuelIncreaseEl);
+
+      const driverPerTrip = parseNum(driverPerTripEl);
+      const uangJalanPerTrip = parseNum(uangJalanPerTripEl);
+      const tollPerTrip = parseNum(tollPerTripEl);
+      const servicePerKm = parseNum(servicePerKmEl);
+      const otherNonFuelPerKm = parseNum(nonFuelPerKmEl);
+      const hoursPerDay = parseNum(hoursPerDayEl);
+
+      const avgSpeed = parseNum(avgSpeedEl);
+      const loadUnloadHours = parseNum(loadUnloadHoursEl);
+      const demurrageHours = parseNum(demurrageHoursEl);
+      const demurrageRate = parseNum(demurrageRateEl);
+
+      const distance = parseNum(distanceEl);
+      const distanceBack = parseNum(distanceBackEl);
+      const payloadGo = parseNum(payloadEl);
+      const payloadBack = parseNum(payloadBackEl);
+      const fullLoad = parseNum(minPayloadEl);
+
+      const tonaseRate = parseNum(tonaseRateEl);
+      const tonaseMinWeight = parseNum(tonaseMinWeightEl);
+
+      const profitTarget = parseNum(profitTargetEl);
+      const workDays = parseNum(workDaysEl);
+      const tripsPerDay = parseNum(tripsPerDayInputEl);
+
+      const missing = fuelPrice <= 0 || kmPerLiter <= 0 || distance <= 0 || payloadGo <= 0;
+      errorEl.style.display = missing ? "block" : "none";
+
+      // Fuel per km
+      let fuelPerKm = 0;
+      if (fuelPrice > 0 && kmPerLiter > 0) fuelPerKm = fuelPrice / kmPerLiter;
+
+      // Non-BBM detail -> cost per trip & per km
+      const nonFuelPerTripFixed = driverPerTrip + uangJalanPerTrip + tollPerTrip;
+      const serviceCostTrip = servicePerKm * distance;
+      const otherNonFuelTrip = otherNonFuelPerKm * distance;
+      const demurrageCostTrip = demurrageHours * demurrageRate;
+      const totalNonFuelTripCost = nonFuelPerTripFixed + serviceCostTrip + otherNonFuelTrip + demurrageCostTrip;
+      const nonFuelEffectivePerKm = distance > 0 ? totalNonFuelTripCost / distance : otherNonFuelPerKm;
+
+      // Total CPK
+      const cpk = fuelPerKm + (nonFuelEffectivePerKm > 0 ? nonFuelEffectivePerKm : 0);
+
+      const totalTripCost = cpk * distance;
+      let costPerKg = 0;
+      let sellPerKg = 0;
+      let tariffPerKm = 0;
+
+      if (payloadGo > 0) {
+        costPerKg = totalTripCost / payloadGo;
+        const marginFactor = 1 + (marginPct > 0 ? marginPct / 100 : 0);
+        sellPerKg = costPerKg * marginFactor;
+        tariffPerKm = (sellPerKg * payloadGo) / distance || 0;
+      }
+
+      const underloadFactor = payloadGo > 0 && fullLoad > 0 ? fullLoad / payloadGo : null;
+
+      // WAKTU
+      const travelHours = avgSpeed > 0 && distance > 0 ? distance / avgSpeed : 0;
+      const totalTripHours = travelHours + loadUnloadHours + demurrageHours;
+      const costPerHour = totalTripHours > 0 ? totalTripCost / totalTripHours : 0;
+      const realisticTripsPerDay =
+        hoursPerDay > 0 && totalTripHours > 0 ? Math.floor(hoursPerDay / totalTripHours) : 0;
+
+      // Update display basic
+      cpkValueEl.innerHTML = fmt.format(isFinite(cpk) ? cpk : 0) + "<span>/km</span>";
+      fuelPerKmChipEl.textContent = "BBM: " + fmt.format(isFinite(fuelPerKm) ? fuelPerKm : 0) + " / km";
+
+      totalTripCostEl.innerHTML = fmt.format(isFinite(totalTripCost) ? totalTripCost : 0) + "<span>/rit</span>";
+      costPerKgEl.innerHTML = fmt.format(isFinite(costPerKg) ? costPerKg : 0) + "<span>/kg</span>";
+      sellPerKgEl.innerHTML = fmt.format(isFinite(sellPerKg) ? sellPerKg : 0) + "<span>/kg</span>";
+      tariffPerKmEl.innerHTML = fmt.format(isFinite(tariffPerKm) ? tariffPerKm : 0) + "<span>/km</span>";
+
+      fuelPerKmEl.textContent = fmt.format(isFinite(fuelPerKm) ? fuelPerKm : 0) + " / km";
+      nonFuelDisplayEl.textContent = fmt.format(isFinite(nonFuelEffectivePerKm) ? nonFuelEffectivePerKm : 0) + " / km";
+      nonFuelTripDisplayEl.textContent = fmt.format(isFinite(totalNonFuelTripCost) ? totalNonFuelTripCost : 0) + " / rit";
+      distanceDisplayEl.textContent = distance + " km";
+      payloadDisplayEl.textContent = payloadGo + " kg";
+      fullLoadDisplayEl.textContent = fullLoad + " kg";
+
+      if (underloadFactor && isFinite(underloadFactor) && underloadFactor > 1) {
+        underloadDisplayEl.textContent = "x" + underloadFactor.toFixed(2) + " (underload)";
+      } else if (underloadFactor && underloadFactor <= 1 && underloadFactor > 0) {
+        underloadDisplayEl.textContent = "OK (≥ target)";
+      } else {
+        underloadDisplayEl.textContent = "-";
+      }
+
+      // Round trip
+      const totalDistancePP = distance + (distanceBack > 0 ? distanceBack : 0);
+      const totalCostPP = cpk * totalDistancePP;
+      const revenueGo = sellPerKg * payloadGo;
+      const revenueBack = sellPerKg * payloadBack;
+      const totalRevenuePP = revenueGo + revenueBack;
+      const profitPP = totalRevenuePP - totalCostPP;
+      const cpkEffPP = totalDistancePP > 0 ? totalCostPP / totalDistancePP : 0;
+
+      rtHeadlineEl.innerHTML = fmt.format(isFinite(totalCostPP) ? totalCostPP : 0) + "<span>/PP (modal)</span>";
+      rtTotalCostEl.innerHTML = fmt.format(isFinite(totalCostPP) ? totalCostPP : 0) + "<span>/PP</span>";
+      rtRevenueEl.innerHTML = fmt.format(isFinite(totalRevenuePP) ? totalRevenuePP : 0) + "<span>/PP</span>";
+      rtProfitEl.innerHTML = fmt.format(isFinite(profitPP) ? profitPP : 0) + "<span>/PP</span>";
+      rtDistanceChipEl.textContent = totalDistancePP + " km total";
+      rtCpkEffEl.innerHTML = fmt.format(isFinite(cpkEffPP) ? cpkEffPP : 0) + "<span>/km</span>";
+
+      // Target profit
+      let profitPerTripNeeded = 0;
+      let neededSellPerKg = 0;
+      let neededMarginPct = 0;
+      const totalTripsPerMonth = (workDays > 0 && tripsPerDay > 0) ? workDays * tripsPerDay : 0;
+
+      if (profitTarget > 0 && totalTripsPerMonth > 0) {
+        profitPerTripNeeded = profitTarget / totalTripsPerMonth;
+      }
+
+      const profitPerTripCurrent = (sellPerKg - costPerKg) * payloadGo;
+
+      if (payloadGo > 0 && costPerKg > 0 && profitPerTripNeeded > 0) {
+        neededSellPerKg = costPerKg + profitPerTripNeeded / payloadGo;
+        neededMarginPct = (neededSellPerKg / costPerKg - 1) * 100;
+      }
+
+      profitPerTripNeededEl.textContent = fmt.format(isFinite(profitPerTripNeeded) ? profitPerTripNeeded : 0) + " / rit";
+      profitPerTripCurrentEl.textContent = fmt.format(isFinite(profitPerTripCurrent) ? profitPerTripCurrent : 0) + " / rit";
+      requiredSellPerKgEl.textContent = fmt.format(isFinite(neededSellPerKg) ? neededSellPerKg : 0) + " / kg";
+      requiredMarginPctEl.textContent = isFinite(neededMarginPct) ? neededMarginPct.toFixed(1) + " %" : "0 %";
+
+      // Time outputs
+      tripHoursDisplayEl.textContent =
+        (isFinite(totalTripHours) ? totalTripHours.toFixed(1) : "0") + " jam/rit";
+      costPerHourDisplayEl.textContent =
+        fmt.format(isFinite(costPerHour) ? costPerHour : 0) + " / jam";
+      realisticTripsDisplayEl.textContent =
+        (isFinite(realisticTripsPerDay) ? realisticTripsPerDay : 0) + " rit/hari";
+
+      // Tonase vs retase
+      let tonaseBillableWeight = payloadGo;
+      if (tonaseMinWeight > 0 && payloadGo > 0 && payloadGo < tonaseMinWeight) {
+        tonaseBillableWeight = tonaseMinWeight;
+      }
+      if (payloadGo <= 0) tonaseBillableWeight = 0;
+
+      let tonaseTripPrice = 0;
+      let retaseTripPrice = 0;
+      let tonasePerKgEff = 0;
+
+      if (tonaseRate > 0 && tonaseBillableWeight > 0) {
+        tonaseTripPrice = tonaseRate * tonaseBillableWeight;
+        tonasePerKgEff = tonaseTripPrice / (payloadGo > 0 ? payloadGo : tonaseBillableWeight);
+      }
+      if (sellPerKg > 0 && payloadGo > 0) {
+        retaseTripPrice = sellPerKg * payloadGo;
+      }
+      const diffTrip = tonaseTripPrice - retaseTripPrice;
+
+      tonaseTripPriceEl.innerHTML = fmt.format(isFinite(tonaseTripPrice) ? tonaseTripPrice : 0) + "<span>/rit</span>";
+      retaseTripPriceEl.innerHTML = fmt.format(isFinite(retaseTripPrice) ? retaseTripPrice : 0) + "<span>/rit</span>";
+      tonasePerKgEffEl.innerHTML = fmt.format(isFinite(tonasePerKgEff) ? tonasePerKgEff : 0) + "<span>/kg</span>";
+      diffTripPriceEl.innerHTML = fmt.format(isFinite(diffTrip) ? diffTrip : 0) + "<span>/rit</span>";
+      tonaseBillableWeightEl.textContent = tonaseBillableWeight + " kg";
+
+      if (tonaseTripPrice > 0 && retaseTripPrice > 0) {
+        const cheaper =
+          tonaseTripPrice < retaseTripPrice ? "Tonase lebih murah" :
+          tonaseTripPrice > retaseTripPrice ? "Retase lebih murah" :
+          "Seimbang";
+
+        compareHeadlineEl.innerHTML =
+          fmt.format(tonaseTripPrice < retaseTripPrice ? tonaseTripPrice : retaseTripPrice) +
+          "<span>/rit</span>";
+        compareChipEl.textContent = cheaper;
+
+        if (tonaseTripPrice < retaseTripPrice) {
+          tonaseVsRetaseNoteEl.textContent = "Tonase unggul untuk konfigurasi ini (total tonase < total retase).";
+          tonaseVsRetaseNoteEl.className = "result-side-value note-ok";
+        } else if (tonaseTripPrice > retaseTripPrice) {
+          tonaseVsRetaseNoteEl.textContent = "Retase (berbasis CPK) lebih kompetitif dari tarif tonase.";
+          tonaseVsRetaseNoteEl.className = "result-side-value note-warn";
+        } else {
+          tonaseVsRetaseNoteEl.textContent = "Tonase dan retase seimbang di konfigurasi ini.";
+          tonaseVsRetaseNoteEl.className = "result-side-value";
+        }
+      } else {
+        compareHeadlineEl.innerHTML = "Rp 0<span>/rit</span>";
+        compareChipEl.textContent = "Lengkapi data untuk bandingkan";
+        tonaseVsRetaseNoteEl.textContent = "-";
+        tonaseVsRetaseNoteEl.className = "result-side-value";
+      }
+
+      // Load factor simulation
+      function lfText(factor) {
+        if (fullLoad <= 0 || totalTripCost <= 0) return "-";
+        const loadKg = fullLoad * factor;
+        const modalKg = totalTripCost / loadKg;
+        const sellKg = modalKg * (1 + (marginPct > 0 ? marginPct / 100 : 0));
+        return `Muatan ${Math.round(loadKg)} kg • Modal ${fmt.format(modalKg)}/kg • Jual ${fmt.format(sellKg)}/kg`;
+      }
+      lf30TextEl.textContent = lfText(0.3);
+      lf50TextEl.textContent = lfText(0.5);
+      lf70TextEl.textContent = lfText(0.7);
+      lf100TextEl.textContent = lfText(1);
+
+      // Scenario BBM naik
+      const cpkCurrent = cpk;
+      const marginFactorNow = 1 + (marginPct > 0 ? marginPct / 100 : 0);
+      const sellNow = costPerKg * marginFactorNow;
+
+      let fuelPerKmNew = fuelPerKm;
+      if (fuelIncreasePct > 0) {
+        const newFuelPrice = fuelPrice * (1 + fuelIncreasePct / 100);
+        fuelPerKmNew = newFuelPrice / kmPerLiter;
+      }
+      const cpkNew = fuelPerKmNew + (nonFuelEffectivePerKm > 0 ? nonFuelEffectivePerKm : 0);
+
+      let costPerKgNew = costPerKg;
+      let sellPerKgNew = sellNow;
+      if (payloadGo > 0 && distance > 0) {
+        const totalTripCostNew = cpkNew * distance;
+        costPerKgNew = totalTripCostNew / payloadGo;
+        sellPerKgNew = costPerKgNew * marginFactorNow;
+      }
+
+      fuelScenarioHeadlineEl.innerHTML = fmt.format(isFinite(cpkNew) ? cpkNew : 0) + "<span>/km</span>";
+      fuelScenarioChipEl.textContent = "BBM +" + (fuelIncreasePct || 0) + "%";
+      currentCpkScenarioEl.innerHTML = fmt.format(isFinite(cpkCurrent) ? cpkCurrent : 0) + "<span>/km</span>";
+      newCpkScenarioEl.innerHTML = fmt.format(isFinite(cpkNew) ? cpkNew : 0) + "<span>/km</span>";
+      currentSellScenarioEl.innerHTML = fmt.format(isFinite(sellNow) ? sellNow : 0) + "<span>/kg</span>";
+      newSellScenarioEl.innerHTML = fmt.format(isFinite(sellPerKgNew) ? sellPerKgNew : 0) + "<span>/kg</span>";
+
+      // Fleet comparison (pakai jarak PP)
+      const routeDist = totalDistancePP > 0 ? totalDistancePP : distance;
+      function fleetCompute(key, cpkEl, sellEl) {
+        const p = truckProfiles[key];
+        if (!p || routeDist <= 0) {
+          cpkEl.textContent = "Rp 0/km";
+          sellEl.textContent = "Rp 0";
+          return;
+        }
+        const fuelPerKmP = (p.fuelPrice || fuelPrice) / (p.kmPerLiter || kmPerLiter || 1);
+        const cpkP = fuelPerKmP + (nonFuelEffectivePerKm > 0 ? nonFuelEffectivePerKm : 0);
+        const totalCostP = cpkP * routeDist;
+        const payloadP = p.payload || fullLoad || payloadGo || 1;
+        const modalKgP = totalCostP / payloadP;
+        const marginFactorP = 1 + (p.margin || marginPct || 0) / 100;
+        const sellKgP = modalKgP * marginFactorP;
+
+        cpkEl.textContent = fmt.format(isFinite(cpkP) ? cpkP : 0) + "/km";
+        sellEl.textContent = fmt.format(isFinite(sellKgP) ? sellKgP : 0) + "/kg";
+      }
+      fleetCompute("engkel", engkelCpkEl, engkelSellEl);
+      fleetCompute("cdd", cddCpkEl, cddSellEl);
+      fleetCompute("fuso", fusoCpkEl, fusoSellEl);
+      fleetCompute("tronton", trontonCpkEl, trontonSellEl);
+
+      // WA summary
+      const routeName = routeNameEl.value || "-";
+      const waLines = [];
+      waLines.push(`📦 *Rangkuman Analisa Logistik*`);
+      waLines.push(`Rute : ${routeName}`);
+      waLines.push(`Truk : ${truckProfileEl.value}`);
+      waLines.push("");
+      waLines.push(`🔹 *CPK & Trip Pergi*`);
+      waLines.push(`- CPK total        : ${fmt.format(isFinite(cpk) ? cpk : 0)}/km`);
+      waLines.push(`- BBM per km       : ${fmt.format(isFinite(fuelPerKm) ? fuelPerKm : 0)}/km`);
+      waLines.push(`- Non-BBM per km   : ${fmt.format(isFinite(nonFuelEffectivePerKm) ? nonFuelEffectivePerKm : 0)}/km`);
+      waLines.push(`- Non-BBM/rit      : ${fmt.format(isFinite(totalNonFuelTripCost) ? totalNonFuelTripCost : 0)}`);
+      waLines.push(`- Jarak pergi      : ${distance} km`);
+      waLines.push(`- Muatan pergi     : ${payloadGo} kg (full: ${fullLoad} kg)`);
+      waLines.push(`- Modal/kg         : ${fmt.format(isFinite(costPerKg) ? costPerKg : 0)}/kg`);
+      waLines.push(`- Tarif jual/kg    : ${fmt.format(isFinite(sellPerKg) ? sellPerKg : 0)}/kg`);
+      waLines.push("");
+      waLines.push(`🔹 *Round Trip (PP)*`);
+      waLines.push(`- Distance PP      : ${totalDistancePP} km`);
+      waLines.push(`- Biaya PP (modal) : ${fmt.format(isFinite(totalCostPP) ? totalCostPP : 0)}`);
+      waLines.push(`- Est. revenue PP  : ${fmt.format(isFinite(totalRevenuePP) ? totalRevenuePP : 0)}`);
+      waLines.push(`- Profit PP        : ${fmt.format(isFinite(profitPP) ? profitPP : 0)}`);
+      waLines.push("");
+      waLines.push(`🔹 *Waktu & Produktivitas*`);
+      waLines.push(`- Trip time (pergi): ${(isFinite(totalTripHours) ? totalTripHours.toFixed(1) : "0")} jam/rit`);
+      waLines.push(`- Cost per hour    : ${fmt.format(isFinite(costPerHour) ? costPerHour : 0)}/jam`);
+      waLines.push(`- Jam kerja/hari   : ${hoursPerDay} jam`);
+      waLines.push(`- Rit/hari realistis (max): ${isFinite(realisticTripsPerDay) ? realisticTripsPerDay : 0} rit`);
+      waLines.push("");
+      waLines.push(`🔹 *Tonase vs Retase (pergi)*`);
+      waLines.push(`- Tarif tonase/kg  : ${fmt.format(tonaseRate)}`);
+      waLines.push(`- Berat ditagih    : ${tonaseBillableWeight} kg`);
+      waLines.push(`- Total tonase     : ${fmt.format(isFinite(tonaseTripPrice) ? tonaseTripPrice : 0)}`);
+      waLines.push(`- Total retase     : ${fmt.format(isFinite(retaseTripPrice) ? retaseTripPrice : 0)}`);
+      waLines.push("");
+      waLines.push(`🔹 *Target Profit*`);
+      waLines.push(`- Target/bln       : ${fmt.format(profitTarget)}`);
+      waLines.push(`- Hari kerja       : ${workDays} hari`);
+      waLines.push(`- Rit/hari (input) : ${tripsPerDay}`);
+      waLines.push(`- Perlu profit/rit : ${fmt.format(isFinite(profitPerTripNeeded) ? profitPerTripNeeded : 0)}`);
+      waLines.push(`- Profit/rit now   : ${fmt.format(isFinite(profitPerTripCurrent) ? profitPerTripCurrent : 0)}`);
+      waLines.push(`- Tarif/kg minimal : ${fmt.format(isFinite(neededSellPerKg) ? neededSellPerKg : 0)}/kg`);
+      waLines.push("");
+      waLines.push(`(Generated otomatis dari kalkulator CPK)`);
+
+      waTextEl.value = waLines.join("\n");
+    }
+
+    // ==== EVENTS ====
+    bbmTypeEl.addEventListener("change", () => updateFromBbmType(true));
+    capsulesBbm.forEach((c) => {
+      c.addEventListener("click", () => {
+        const t = c.dataset.bbm;
+        bbmTypeEl.value = t;
+        updateFromBbmType(true);
+      });
+    });
+
+    [
+      fuelPriceEl, kmPerLiterEl, marginEl, fuelIncreaseEl,
+      driverPerTripEl, uangJalanPerTripEl, tollPerTripEl, servicePerKmEl, nonFuelPerKmEl,
+      hoursPerDayEl, avgSpeedEl, loadUnloadHoursEl, demurrageHoursEl, demurrageRateEl,
+      distanceEl, distanceBackEl, payloadEl, payloadBackEl, minPayloadEl,
+      tonaseRateEl, tonaseMinWeightEl,
+      profitTargetEl, workDaysEl, tripsPerDayInputEl,
+      routeNameEl
+    ].forEach((el) => el.addEventListener("input", compute));
+
+    function setTripsPerDay(n) {
+      tripsPerDayInputEl.value = n;
+      [tripsPerDay1, tripsPerDay2, tripsPerDay3].forEach((btn) => btn.classList.remove("active"));
+      if (n === 1) tripsPerDay1.classList.add("active");
+      if (n === 2) tripsPerDay2.classList.add("active");
+      if (n === 3) tripsPerDay3.classList.add("active");
+      compute();
+    }
+    tripsPerDay1.addEventListener("click", () => setTripsPerDay(1));
+    tripsPerDay2.addEventListener("click", () => setTripsPerDay(2));
+    tripsPerDay3.addEventListener("click", () => setTripsPerDay(3));
+
+    retaseModePill.addEventListener("click", () => setMode("retase"));
+    compareModePill.addEventListener("click", () => setMode("compare"));
+
+    truckProfileEl.addEventListener("change", () => {
+      const val = truckProfileEl.value;
+      if (val === "custom") compute();
+      else applyProfile(val);
+    });
+
+    loadProfileBtn.addEventListener("click", () => {
+      const val = truckProfileEl.value;
+      if (val !== "custom") applyProfile(val);
+    });
+
+    saveProfileBtn.addEventListener("click", () => {
+      const val = truckProfileEl.value;
+      if (val !== "custom") saveCurrentToProfile(val);
+    });
+
+    resetProfilesBtn.addEventListener("click", () => resetProfiles());
+
+    routePresetEl.addEventListener("change", () => {
+      const key = routePresetEl.value;
+      if (key !== "none") applyRoutePreset(key);
+    });
+
+    saveRouteBtn.addEventListener("click", () => {
+      const name = routeNameEl.value.trim();
+      if (!name) return;
+      const key = name;
+      routePresets[key] = {
+        name,
+        distance: parseNum(distanceEl),
+        distanceBack: parseNum(distanceBackEl),
+        tonaseRate: parseNum(tonaseRateEl),
+        tonaseMinWeight: parseNum(tonaseMinWeightEl)
+      };
+      storeRoutePresets();
+      refreshRoutePresetOptions();
+      routePresetEl.value = key;
+    });
+
+    deleteRouteBtn.addEventListener("click", () => {
+      const key = routePresetEl.value;
+      if (key && key !== "none" && routePresets[key]) {
+        delete routePresets[key];
+        storeRoutePresets();
+        refreshRoutePresetOptions();
+        routePresetEl.value = "none";
+      }
+    });
+
+    copyWaBtn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(waTextEl.value || "");
+        copyWaBtn.textContent = "Copied!";
+        setTimeout(() => (copyWaBtn.textContent = "Copy ke clipboard"), 1200);
+      } catch {
+        copyWaBtn.textContent = "Gagal copy";
+        setTimeout(() => (copyWaBtn.textContent = "Copy ke clipboard"), 1500);
+      }
+    });
+
+    // Init
+    refreshRoutePresetOptions();
+
+    fuelPriceEl.value = 6800;
+    kmPerLiterEl.value = 6;
+    marginEl.value = 20;
+    fuelIncreaseEl.value = 10;
+
+    driverPerTripEl.value = 150000;
+    uangJalanPerTripEl.value = 100000;
+    tollPerTripEl.value = 80000;
+    servicePerKmEl.value = 300;
+    nonFuelPerKmEl.value = 200;
+    hoursPerDayEl.value = 14;
+
+    avgSpeedEl.value = 40;
+    loadUnloadHoursEl.value = 3;
+    demurrageHoursEl.value = 0;
+    demurrageRateEl.value = 50000;
+
+    distanceEl.value = 120;
+    distanceBackEl.value = 120;
+    payloadEl.value = 700;
+    payloadBackEl.value = 0;
+    minPayloadEl.value = 700;
+
+    tonaseRateEl.value = 1500;
+    tonaseMinWeightEl.value = 0;
+
+    profitTargetEl.value = 20000000;
+    workDaysEl.value = 24;
+    tripsPerDayInputEl.value = 1;
+    setTripsPerDay(1);
+
+    bbmTypeEl.value = "biosolar";
+    updateFromBbmType(true);
+
+    truckProfileEl.value = "engkel";
+    applyProfile("engkel");
+    setMode("retase");
+
+    compute();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>DADANG – HISTORI CALCULATOR (Habit per Unit)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:#020617;
+      color:#e5e7eb;
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      padding:16px;
+    }
+    .app {
+      width:100%;
+      max-width:1320px;
+      background:radial-gradient(circle at top left,#111827 0,#020617 55%,#020617 100%);
+      border-radius:22px;
+      border:1px solid rgba(148,163,184,.4);
+      box-shadow:0 24px 80px rgba(15,23,42,.9);
+      padding:16px 18px 18px;
+      position:relative;
+      overflow:hidden;
+    }
+    .glow {
+      position:absolute;
+      inset:-40%;
+      background:
+        radial-gradient(circle at 0% 0%,rgba(59,130,246,.23),transparent 60%),
+        radial-gradient(circle at 100% 0%,rgba(34,197,94,.23),transparent 55%);
+      opacity:.8;
+      pointer-events:none;
+      z-index:-1;
+    }
+
+    .header {
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:flex-start;
+      margin-bottom:12px;
+    }
+    .brand {
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .brand-logo-wrap {
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:4px;
+    }
+    .brand-logo {
+      width:46px;
+      height:46px;
+      border-radius:16px;
+      border:1px solid rgba(148,163,184,.7);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(15,23,42,.96);
+      overflow:hidden;
+    }
+    .brand-logo img {
+      width:100%;
+      height:100%;
+      object-fit:contain;
+    }
+    .brand-mark-fallback {
+      font-size:20px;
+      font-weight:700;
+      color:#e5e7eb;
+    }
+    .logo-upload {
+      font-size:9px;
+      color:#9ca3af;
+    }
+    .logo-upload input {
+      font-size:9px;
+      max-width:80px;
+    }
+    .brand-text h1 {
+      font-size:18px;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+    }
+    .brand-text p {
+      font-size:11px;
+      color:#9ca3af;
+      margin-top:2px;
+    }
+    .owner {
+      font-size:11px;
+      text-align:right;
+      color:#9ca3af;
+    }
+    .owner strong {
+      color:#e5e7eb;
+      font-size:12px;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      display:block;
+      margin-bottom:2px;
+    }
+    .pill {
+      margin-top:4px;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.55);
+      font-size:10px;
+      color:#9ca3af;
+      background:rgba(15,23,42,.96);
+    }
+    .pill-dot {
+      width:7px;
+      height:7px;
+      border-radius:999px;
+      background:#22c55e;
+      box-shadow:0 0 16px rgba(34,197,94,.9);
+    }
+
+    .section {
+      margin-top:10px;
+      border-radius:18px;
+      border:1px solid #1f2937;
+      background:rgba(15,23,42,.98);
+      padding:10px 12px;
+    }
+    .section-header {
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:flex-start;
+      margin-bottom:8px;
+    }
+    .section-title {
+      font-size:13px;
+      font-weight:600;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+    .section-sub {
+      font-size:11px;
+      color:#9ca3af;
+      margin-top:3px;
+    }
+    .tag {
+      font-size:10px;
+      padding:3px 9px;
+      border-radius:999px;
+      border:1px solid #4b5563;
+      color:#9ca3af;
+      white-space:nowrap;
+    }
+
+    label {
+      font-size:11px;
+      display:block;
+      margin-bottom:4px;
+      color:#e5e7eb;
+    }
+    input[type="file"] {
+      font-size:11px;
+      padding:4px 6px;
+      border-radius:8px;
+      border:1px solid #4b5563;
+      background:#020617;
+      color:#e5e7eb;
+    }
+    .controls {
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      margin-top:6px;
+    }
+    .btn {
+      font-size:11px;
+      padding:6px 11px;
+      border-radius:999px;
+      border:1px solid #22c55e;
+      background:#022c22;
+      color:#bbf7d0;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+    }
+    .btn:disabled {
+      opacity:.5;
+      cursor:not-allowed;
+    }
+    .btn-secondary {
+      border-color:#4b5563;
+      background:#020617;
+      color:#e5e7eb;
+    }
+
+    .summary {
+      display:none;
+      margin-top:10px;
+      border-radius:14px;
+      border:1px solid #111827;
+      background:#020617;
+      padding:8px 10px;
+      font-size:11px;
+    }
+    .summary-grid {
+      display:flex;
+      flex-wrap:wrap;
+      gap:14px;
+      margin-top:4px;
+    }
+    .summary-item span {
+      display:block;
+    }
+    .summary-label {
+      color:#9ca3af;
+      margin-bottom:2px;
+    }
+    .summary-value {
+      font-size:14px;
+      font-weight:600;
+    }
+
+    .filters {
+      margin-top:8px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      font-size:11px;
+    }
+    .filters input {
+      font-size:11px;
+      padding:5px 8px;
+      border-radius:999px;
+      border:1px solid #374151;
+      background:#020617;
+      color:#e5e7eb;
+      min-width:140px;
+    }
+    .filters select {
+      font-size:11px;
+      padding:5px 8px;
+      border-radius:999px;
+      border:1px solid #374151;
+      background:#020617;
+      color:#e5e7eb;
+    }
+
+    .export-buttons {
+      margin-top:8px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      font-size:11px;
+    }
+
+    .table-wrap {
+      margin-top:10px;
+      border-radius:14px;
+      border:1px solid #111827;
+      overflow:auto;
+      max-height:420px;
+      background:#020617;
+    }
+    table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:11px;
+    }
+    thead {
+      position:sticky;
+      top:0;
+      background:#020617;
+      z-index:1;
+    }
+    th, td {
+      padding:5px 6px;
+      border-bottom:1px solid #111827;
+      text-align:left;
+      white-space:nowrap;
+    }
+    th {
+      font-weight:600;
+      color:#9ca3af;
+      border-bottom:1px solid #1f2937;
+    }
+    tr:nth-child(even) td {
+      background:rgba(15,23,42,.8);
+    }
+    tr.selected td {
+      background:rgba(30,64,175,.7);
+    }
+
+    .badge {
+      display:inline-flex;
+      padding:2px 7px;
+      border-radius:999px;
+      border:1px solid #4b5563;
+      font-size:10px;
+      align-items:center;
+      justify-content:center;
+      gap:4px;
+    }
+    .badge-green {
+      border-color:#22c55e;
+      background:rgba(22,163,74,.15);
+      color:#bbf7d0;
+    }
+    .badge-yellow {
+      border-color:#eab308;
+      background:rgba(202,138,4,.15);
+      color:#fef9c3;
+    }
+    .badge-red {
+      border-color:#ef4444;
+      background:rgba(220,38,38,.14);
+      color:#fecaca;
+    }
+
+    .muted { color:#9ca3af; font-size:10px; }
+
+    /* Panel detail */
+    .detail-panel {
+      margin-top:10px;
+      border-radius:14px;
+      border:1px solid #111827;
+      background:#020617;
+      padding:8px 10px;
+      font-size:11px;
+      display:none;
+    }
+    .detail-header {
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .detail-title {
+      font-weight:600;
+      font-size:12px;
+    }
+    .detail-metrics {
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:6px;
+    }
+    .detail-metrics-item span {
+      display:block;
+    }
+    .detail-list {
+      margin-top:6px;
+      padding-left:16px;
+    }
+    .detail-list li {
+      margin-bottom:2px;
+    }
+
+    @media (max-width:768px) {
+      body { padding:10px; }
+      .app { padding:12px 10px 12px; border-radius:18px; }
+      .brand-text h1 { font-size:14px; }
+    }
+
+    /* PRINT (Export PDF) */
+    @media print {
+      body {
+        background:white;
+        padding:0;
+      }
+      .app {
+        max-width:100%;
+        box-shadow:none;
+        border-radius:0;
+        border:none;
+        padding:8mm;
+      }
+      .glow { display:none; }
+      input, button, .filters, .export-buttons {
+        display:none !important;
+      }
+      .table-wrap {
+        max-height:none;
+        overflow:visible;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="glow"></div>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="brand">
+      <div class="brand-logo-wrap">
+        <div class="brand-logo">
+          <span id="logoFallback" class="brand-mark-fallback">D</span>
+          <img id="logoPreview" alt="Logo" style="display:none;">
+        </div>
+        <div class="logo-upload">
+          <span>Logo:</span><br>
+          <input type="file" id="logoInput" accept="image/*">
+        </div>
+      </div>
+      <div class="brand-text">
+        <h1>HISTORI CALCULATOR</h1>
+        <p>Analisa Habit User per Unit (No. Rangka) • View per Nopol</p>
+      </div>
+    </div>
+    <div class="owner">
+      <strong>DADANG WAHYUONO</strong>
+      <span>Maintenance &amp; Logistic Support</span>
+      <div class="pill">
+        <span class="pill-dot"></span>
+        SPK History • CPK • %OTR/Tahun
+      </div>
+    </div>
+  </header>
+
+  <!-- SECTION: INPUT HISTORI -->
+  <section class="section">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Input Histori SPK</div>
+        <div class="section-sub">
+          File: <strong>HISTORI.csv</strong><br/>
+          Header yang dipakai engine:
+          <code style="font-size:10px;">No. Rangka, No. Polisi, Tgl. SPK, Estimasi Biaya, Merk, Type, Customer, Tahun, Odo Meter Service</code>
+        </div>
+      </div>
+      <div class="tag">Step 1 • Upload data</div>
+    </div>
+
+    <div class="controls">
+      <div>
+        <label for="historiFile">Pilih file HISTORI.csv</label>
+        <input id="historiFile" type="file" accept=".csv,text/csv" />
+      </div>
+      <button type="button" id="btnProses" class="btn">
+        Proses Analisa Habit
+      </button>
+      <button type="button" id="btnReset" class="btn btn-secondary">
+        Reset
+      </button>
+    </div>
+
+    <div class="summary" id="summaryBox">
+      <div>Ringkasan data histori:</div>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <span class="summary-label">Total unit unik (No. Rangka)</span>
+          <span class="summary-value" id="sumUnit">0</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Rentang tahun SPK (fleet)</span>
+          <span class="summary-value" id="sumYears">0</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Total biaya semua SPK</span>
+          <span class="summary-value" id="sumCost">Rp 0</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Avg biaya / unit / tahun (fleet)</span>
+          <span class="summary-value" id="sumAvgPerUnitYear">Rp 0</span>
+        </div>
+      </div>
+      <div class="muted" style="margin-top:4px;">
+        %OTR/Tahun = rata-rata biaya tahunan per unit ÷ estimasi OTR.<br>
+        CPK = total biaya ÷ selisih km (dari Odo Meter Service).
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION: FILTER + TABEL -->
+  <section class="section" style="margin-top:10px;">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Habit per Unit (No. Rangka)</div>
+        <div class="section-sub">
+          Engine menggabungkan semua SPK per <strong>No. Rangka</strong>, tampilkan dengan <strong>Nopol terakhir</strong>, 
+          jumlah SPK, total biaya, avg/tahun, estimasi OTR, %OTR/Tahun, total km &amp; CPK.
+        </div>
+      </div>
+      <div class="tag">Step 2 • Baca hasil &amp; Export</div>
+    </div>
+
+    <div class="filters">
+      <input type="text" id="filterNopol" placeholder="Filter No. Polisi..." />
+      <input type="text" id="filterCustomer" placeholder="Filter Customer..." />
+      <input type="text" id="filterMerk" placeholder="Filter Merk..." />
+      <select id="filterStatus">
+        <option value="">Filter status habit</option>
+        <option value="hemat">&lt; 1% OTR (Hemat)</option>
+        <option value="normal">1–2% OTR (Normal)</option>
+        <option value="boros">&gt; 2% OTR (Boros)</option>
+      </select>
+    </div>
+
+    <div class="export-buttons">
+      <button type="button" id="btnExportCsv" class="btn btn-secondary">
+        Export Excel (CSV)
+      </button>
+      <button type="button" id="btnExportPdf" class="btn btn-secondary">
+        Export PDF
+      </button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>No. Polisi (terakhir)</th>
+            <th>No. Rangka</th>
+            <th>Customer</th>
+            <th>Merk</th>
+            <th>Type</th>
+            <th>Tahun Unit</th>
+            <th>Periode SPK</th>
+            <th>Jml SPK</th>
+            <th>Total Biaya</th>
+            <th>Avg / Tahun</th>
+            <th>OTR Est.</th>
+            <th>% OTR / Tahun</th>
+            <th>Total Km</th>
+            <th>CPK (Rp/km)</th>
+            <th>Status Habit</th>
+          </tr>
+        </thead>
+        <tbody id="habitBody">
+        </tbody>
+      </table>
+    </div>
+
+    <div class="muted" style="margin-top:4px;">
+      Klik salah satu baris untuk melihat <strong>summary penyebab boros &amp; mitigasi</strong> di panel bawah.
+    </div>
+
+    <!-- PANEL DETAIL -->
+    <div id="detailPanel" class="detail-panel">
+      <div class="detail-header">
+        <div>
+          <div class="detail-title" id="detailTitle">Unit terpilih</div>
+          <div class="muted" id="detailSubtitle"></div>
+        </div>
+        <div id="detailStatus"></div>
+      </div>
+
+      <div class="detail-metrics">
+        <div class="detail-metrics-item">
+          <span class="summary-label">Avg biaya / tahun</span>
+          <span class="summary-value" id="detailAvgPerYear">Rp 0</span>
+        </div>
+        <div class="detail-metrics-item">
+          <span class="summary-label">OTR estimasi</span>
+          <span class="summary-value" id="detailOtr">Rp 0</span>
+        </div>
+        <div class="detail-metrics-item">
+          <span class="summary-label">%OTR / tahun</span>
+          <span class="summary-value" id="detailPctOtr">0 %</span>
+        </div>
+        <div class="detail-metrics-item">
+          <span class="summary-label">Total km (estimasi)</span>
+          <span class="summary-value" id="detailKm">0 km</span>
+        </div>
+        <div class="detail-metrics-item">
+          <span class="summary-label">CPK</span>
+          <span class="summary-value" id="detailCpk">Rp 0 / km</span>
+        </div>
+      </div>
+
+      <div style="margin-top:8px; display:flex; flex-wrap:wrap; gap:16px;">
+        <div style="flex:1 1 220px;">
+          <div style="font-weight:600; font-size:11px; margin-bottom:3px;">Kenapa bisa boros / hemat:</div>
+          <ul class="detail-list" id="detailReasons"></ul>
+        </div>
+        <div style="flex:1 1 220px;">
+          <div style="font-weight:600; font-size:11px; margin-bottom:3px;">Mitigasi / tindakan rekomendasi:</div>
+          <ul class="detail-list" id="detailMitigations"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  // ===== Logo upload =====
+  const logoInput = document.getElementById("logoInput");
+  const logoPreview = document.getElementById("logoPreview");
+  const logoFallback = document.getElementById("logoFallback");
+
+  logoInput.addEventListener("change", () => {
+    const file = logoInput.files && logoInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      logoPreview.src = e.target.result;
+      logoPreview.style.display = "block";
+      logoFallback.style.display = "none";
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // ===== Util umum =====
+  function detectDelimiter(line) {
+    const candidates = [",",";","\\t"];
+    let best = ",";
+    let maxCount = -1;
+    for (const c of candidates) {
+      const real = (c === "\\t") ? "\t" : c;
+      const cnt = (line.match(new RegExp(real, "g")) || []).length;
+      if (cnt > maxCount) { maxCount = cnt; best = real; }
+    }
+    return best;
+  }
+
+  function parseCSV(text) {
+    if (!text) return [];
+    const lines = text.split(/\r?\n/).filter(r => r.trim().length > 0);
+    if (!lines.length) return [];
+    const delim = detectDelimiter(lines[0]);
+    const rows = [];
+    for (let line of lines) {
+      const cols = [];
+      let cur = "";
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') {
+          inQuotes = !inQuotes;
+          continue;
+        }
+        if (!inQuotes && ch === delim) {
+          cols.push(cur);
+          cur = "";
+        } else {
+          cur += ch;
+        }
+      }
+      cols.push(cur);
+      rows.push(cols);
+    }
+    return rows;
+  }
+
+  function formatRupiah(n) {
+    n = Number(n) || 0;
+    return "Rp " + n.toLocaleString("id-ID");
+  }
+
+  function parseDateSmart(str) {
+    if (!str) return null;
+    const s = String(str).trim();
+    if (!s) return null;
+    let d = new Date(s);
+    if (!isNaN(d)) return d;
+
+    const tmp = s.replace(/[\/.\-]/g," ");
+    const parts = tmp.split(/\s+/).filter(Boolean);
+    if (parts.length < 3) return null;
+
+    let day = parseInt(parts[0],10);
+    let monthToken = parts[1].toLowerCase();
+    let year = parseInt(parts[2],10);
+    if (isNaN(day) || isNaN(year)) return null;
+
+    const mMap = {
+      "jan":0,"januari":0,
+      "feb":1,"februari":1,
+      "mar":2,"maret":2,
+      "apr":3,"april":3,
+      "may":4,"mei":4,
+      "jun":5,"juni":5,
+      "jul":6,"juli":6,
+      "aug":7,"agu":7,"agt":7,"agustus":7,
+      "sep":8,"sept":8,"september":8,
+      "oct":9,"okt":9,"oktober":9,
+      "nov":10,"november":10,
+      "dec":11,"des":11,"desember":11
+    };
+
+    let month;
+    if (mMap.hasOwnProperty(monthToken)) {
+      month = mMap[monthToken];
+    } else {
+      const mNum = parseInt(monthToken,10);
+      if (!isNaN(mNum) && mNum >=1 && mNum <=12) month = mNum - 1;
+      else return null;
+    }
+
+    if (year < 100) year += 2000;
+    d = new Date(year, month, day);
+    return isNaN(d) ? null : d;
+  }
+
+  // ===== Estimasi OTR berbasis kategori (pendekatan) =====
+  function classifyCategory(merk, type) {
+    merk = (merk || "").toUpperCase();
+    type = (type || "").toUpperCase();
+
+    if (merk.includes("CLUB CAR")) return "GOLF";
+    if (merk === "BYD") {
+      if (type.includes("SEAL")) return "EV_SEDAN";
+      return "EV_VAN";
+    }
+    if (type.includes("HIACE")) return "VAN_BESAR";
+    if (type.includes("AXOR") || type.includes("FIGHTER") || type.includes("FN 62")) return "TRUCK_BESAR";
+
+    if (type.includes("INNOVA ZENIX")) return "MPV_BESAR_BARU";
+    if (type.includes("INNOVA")) return "MPV_BESAR";
+
+    if (type.includes("AVANZA") || type.includes("VELOZ") || type.includes("STARGAZER")) return "LOW_MPV";
+    if (type.includes("BRV") || type.includes("RUSH") || type.includes("CRETA") || type.includes("HR-V") || type.includes("HRV")) return "SUV";
+
+    if (type.includes("TRAGA") || type.includes("GRAN MAX PU") || type.includes("CARRY PU") || type.includes("L300") || type.includes("PICK UP")) return "PICKUP";
+
+    if (type.includes("GRAN MAX MB")) return "VAN_KECIL";
+
+    if (type.includes("HILUX")) return "HILUX";
+
+    if (type.includes("ELF") || type.includes("NLR") || type.includes("NMR")) return "TRUCK_RINGAN";
+
+    if (type.includes("PAJERO")) return "SUV_PREMIUM";
+    if (type.includes("EXPANDER") || type.includes("XPANDER")) return "MPV_SEDANG";
+
+    return "DEFAULT";
+  }
+
+  function baselineOtrBaru(category) {
+    switch(category) {
+      case "GOLF": return 150_000_000;
+      case "EV_SEDAN": return 650_000_000;
+      case "EV_VAN": return 700_000_000;
+      case "VAN_BESAR": return 550_000_000;
+      case "TRUCK_BESAR": return 1_150_000_000;
+      case "MPV_BESAR_BARU": return 440_000_000;
+      case "MPV_BESAR": return 400_000_000;
+      case "LOW_MPV": return 250_000_000;
+      case "SUV": return 380_000_000;
+      case "SUV_PREMIUM": return 650_000_000;
+      case "PICKUP": return 230_000_000;
+      case "VAN_KECIL": return 240_000_000;
+      case "HILUX": return 480_000_000;
+      case "TRUCK_RINGAN": return 450_000_000;
+      case "MPV_SEDANG": return 300_000_000;
+      default: return 300_000_000;
+    }
+  }
+
+  function estimateOtr(merk, type, tahunUnit) {
+    const cat = classifyCategory(merk, type);
+    const baseNew = baselineOtrBaru(cat);
+    const refYear = 2025;
+    let age = 0;
+    if (tahunUnit) {
+      tahunUnit = Number(tahunUnit) || refYear;
+      age = Math.max(0, refYear - tahunUnit);
+    }
+    const factor = Math.max(0.7, 1 - 0.04 * age); // depresiasi 4%/tahun, min 70%
+    return Math.round(baseNew * factor);
+  }
+
+  // ===== Logic utama =====
+  const historiFileInput = document.getElementById("historiFile");
+  const btnProses = document.getElementById("btnProses");
+  const btnReset = document.getElementById("btnReset");
+
+  const summaryBox = document.getElementById("summaryBox");
+  const sumUnitEl = document.getElementById("sumUnit");
+  const sumYearsEl = document.getElementById("sumYears");
+  const sumCostEl = document.getElementById("sumCost");
+  const sumAvgPerUnitYearEl = document.getElementById("sumAvgPerUnitYear");
+
+  const habitBody = document.getElementById("habitBody");
+
+  const filterNopol = document.getElementById("filterNopol");
+  const filterCustomer = document.getElementById("filterCustomer");
+  const filterMerk = document.getElementById("filterMerk");
+  const filterStatus = document.getElementById("filterStatus");
+
+  const btnExportCsv = document.getElementById("btnExportCsv");
+  const btnExportPdf = document.getElementById("btnExportPdf");
+
+  const detailPanel = document.getElementById("detailPanel");
+  const detailTitle = document.getElementById("detailTitle");
+  const detailSubtitle = document.getElementById("detailSubtitle");
+  const detailStatus = document.getElementById("detailStatus");
+  const detailAvgPerYear = document.getElementById("detailAvgPerYear");
+  const detailOtr = document.getElementById("detailOtr");
+  const detailPctOtr = document.getElementById("detailPctOtr");
+  const detailKm = document.getElementById("detailKm");
+  const detailCpk = document.getElementById("detailCpk");
+  const detailReasons = document.getElementById("detailReasons");
+  const detailMitigations = document.getElementById("detailMitigations");
+
+  let habitData = [];
+  let selectedIndex = null;
+
+  function findIndexLike(header, keywords) {
+    const norm = header.map(h =>
+      String(h)
+        .toLowerCase()
+        .replace(/\s+/g,"")
+        .replace(/\./g,"")
+    );
+    for (let i = 0; i < norm.length; i++) {
+      for (const kw of keywords) {
+        if (norm[i].includes(kw)) return i;
+      }
+    }
+    return -1;
+  }
+
+  btnProses.addEventListener("click", () => {
+    const file = historiFileInput.files && historiFileInput.files[0];
+    if (!file) {
+      alert("Pilih file HISTORI.csv dulu.");
+      return;
+    }
+    btnProses.disabled = true;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        processHistori(ev.target.result);
+      } catch (e) {
+        console.error(e);
+        alert("Gagal memproses file HISTORI.");
+      } finally {
+        btnProses.disabled = false;
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  btnReset.addEventListener("click", () => {
+    historiFileInput.value = "";
+    summaryBox.style.display = "none";
+    habitBody.innerHTML = "";
+    habitData = [];
+    filterNopol.value = "";
+    filterCustomer.value = "";
+    filterMerk.value = "";
+    filterStatus.value = "";
+    detailPanel.style.display = "none";
+    selectedIndex = null;
+  });
+
+  function processHistori(csvText) {
+    const rows = parseCSV(csvText);
+    if (rows.length <= 1) {
+      alert("File HISTORI kosong atau tidak ada data.");
+      return;
+    }
+    const header = rows[0].map(h => String(h).trim());
+
+    const idxNoRangka   = findIndexLike(header, ["norangka","rangka"]);
+    const idxNopol      = findIndexLike(header, ["nopol","nopolis"]);
+    const idxTglSpk     = findIndexLike(header, ["tglspk","tanggalspk","tgspk"]);
+    const idxBiaya      = findIndexLike(header, ["estimasibiaya","estimasi","biaya"]);
+    const idxMerk       = findIndexLike(header, ["merk","brand"]);
+    const idxType       = findIndexLike(header, ["type","tipe","model"]);
+    const idxCustomer   = findIndexLike(header, ["customer","pelanggan"]);
+    const idxTahunUnit  = findIndexLike(header, ["tahun","thn"]);
+    const idxOdo        = findIndexLike(header, ["odo","odometer","odometerservice"]);
+
+    if (idxNoRangka === -1 || idxTglSpk === -1 || idxBiaya === -1) {
+      alert("Kolom wajib tidak ditemukan. Minimal harus ada: 'No. Rangka', 'Tgl. SPK', 'Estimasi Biaya'.");
+      return;
+    }
+
+    const map = new Map(); // key: noRangka
+    let minYearSpk = Infinity;
+    let maxYearSpk = -Infinity;
+    let totalBiayaAll = 0;
+
+    for (let r = 1; r < rows.length; r++) {
+      const cols = rows[r];
+      if (!cols || cols.length === 0) continue;
+
+      const noRangka = (cols[idxNoRangka] || "").toString().trim();
+      if (!noRangka) continue;
+
+      const nopol = idxNopol !== -1 ? (cols[idxNopol] || "").toString().trim() : "";
+      const tglStr = cols[idxTglSpk] || "";
+      const d = parseDateSmart(tglStr);
+      if (!d) continue;
+      const yearSpk = d.getFullYear();
+      if (!yearSpk || isNaN(yearSpk)) continue;
+
+      let biayaRaw = cols[idxBiaya] || "";
+      const onlyDigits = String(biayaRaw).replace(/[^\d]/g,"");
+      const biaya = onlyDigits ? parseInt(onlyDigits,10) : 0;
+
+      const merk = idxMerk !== -1 ? (cols[idxMerk] || "").toString().trim() : "";
+      const type = idxType !== -1 ? (cols[idxType] || "").toString().trim() : "";
+      const customer = idxCustomer !== -1 ? (cols[idxCustomer] || "").toString().trim() : "";
+      const tahunUnit = idxTahunUnit !== -1 ? Number(cols[idxTahunUnit]) || null : null;
+      const odo = idxOdo !== -1 ? Number(String(cols[idxOdo]).replace(/[^\d]/g,"")) || null : null;
+
+      let rec = map.get(noRangka);
+      if (!rec) {
+        rec = {
+          noRangka,
+          nopolTerakhir: nopol,
+          merk,
+          type,
+          customer,
+          tahunUnit,
+          totalBiaya: 0,
+          yearMin: yearSpk,
+          yearMax: yearSpk,
+          jumlahSpk: 0,
+          odoMin: odo,
+          odoMax: odo
+        };
+        map.set(noRangka, rec);
+      } else {
+        if (nopol) rec.nopolTerakhir = nopol;
+        if (!rec.merk && merk) rec.merk = merk;
+        if (!rec.type && type) rec.type = type;
+        if (!rec.customer && customer) rec.customer = customer;
+        if (!rec.tahunUnit && tahunUnit) rec.tahunUnit = tahunUnit;
+        rec.yearMin = Math.min(rec.yearMin, yearSpk);
+        rec.yearMax = Math.max(rec.yearMax, yearSpk);
+
+        if (odo != null) {
+          if (rec.odoMin == null || odo < rec.odoMin) rec.odoMin = odo;
+          if (rec.odoMax == null || odo > rec.odoMax) rec.odoMax = odo;
+        }
+      }
+
+      rec.jumlahSpk += 1;
+      rec.totalBiaya += biaya;
+
+      totalBiayaAll += biaya;
+      minYearSpk = Math.min(minYearSpk, yearSpk);
+      maxYearSpk = Math.max(maxYearSpk, yearSpk);
+    }
+
+    const arr = [];
+    let sumYearsFleet = 0;
+    let sumAvgPerUnitYear = 0;
+
+    for (const rec of map.values()) {
+      const span = rec.yearMax - rec.yearMin + 1;
+      const yearsSpan = span > 0 ? span : 1;
+      const avgPerYear = rec.totalBiaya / yearsSpan;
+      const tahunUnit = rec.tahunUnit || rec.yearMin;
+      const otrEst = estimateOtr(rec.merk, rec.type, tahunUnit);
+      let pctOtr = null;
+      if (otrEst && otrEst > 0) {
+        pctOtr = (avgPerYear / otrEst) * 100;
+      }
+
+      let totalKm = null;
+      let cpk = null;
+      if (rec.odoMin != null && rec.odoMax != null && rec.odoMax > rec.odoMin) {
+        totalKm = rec.odoMax - rec.odoMin;
+        cpk = rec.totalBiaya / totalKm;
+      }
+
+      sumYearsFleet += yearsSpan;
+      sumAvgPerUnitYear += avgPerYear;
+
+      arr.push({
+        noRangka: rec.noRangka,
+        nopol: rec.nopolTerakhir || "-",
+        merk: rec.merk,
+        type: rec.type,
+        customer: rec.customer,
+        tahunUnit,
+        yearMin: rec.yearMin,
+        yearMax: rec.yearMax,
+        spanYears: yearsSpan,
+        totalBiaya: rec.totalBiaya,
+        avgPerYear,
+        otrEst,
+        pctOtr,
+        jumlahSpk: rec.jumlahSpk,
+        totalKm,
+        cpk
+      });
+    }
+
+    habitData = arr;
+    selectedIndex = null;
+    renderTable();
+
+    if (arr.length) {
+      summaryBox.style.display = "block";
+      sumUnitEl.textContent = arr.length;
+      const totalSpan = (minYearSpk <= maxYearSpk) ? (maxYearSpk - minYearSpk + 1) : 0;
+      sumYearsEl.textContent = totalSpan;
+      sumCostEl.textContent = formatRupiah(totalBiayaAll);
+      const avgFleet = arr.length ? (sumAvgPerUnitYear / arr.length) : 0;
+      sumAvgPerUnitYearEl.textContent = formatRupiah(Math.round(avgFleet));
+    } else {
+      summaryBox.style.display = "none";
+    }
+
+    detailPanel.style.display = "none";
+  }
+
+  function statusFromPct(pct) {
+    if (pct == null || isNaN(pct)) return {label:"-", class:"", key:""};
+    if (pct < 1) return {label:"Hemat", class:"badge-green", key:"hemat"};
+    if (pct <= 2) return {label:"Normal", class:"badge-yellow", key:"normal"};
+    return {label:"Boros", class:"badge-red", key:"boros"};
+  }
+
+  function renderTable() {
+    const nopolFilter = filterNopol.value.trim().toLowerCase();
+    const custFilter = filterCustomer.value.trim().toLowerCase();
+    const merkFilter = filterMerk.value.trim().toLowerCase();
+    const statusFilter = filterStatus.value;
+
+    habitBody.innerHTML = "";
+    let idx = 0;
+
+    habitData.forEach((item, i) => {
+      let show = true;
+      if (nopolFilter && !item.nopol.toLowerCase().includes(nopolFilter)) show = false;
+      if (custFilter && !(item.customer || "").toLowerCase().includes(custFilter)) show = false;
+      if (merkFilter && !(item.merk || "").toLowerCase().includes(merkFilter)) show = false;
+
+      const st = statusFromPct(item.pctOtr);
+      if (statusFilter && st.key !== statusFilter) show = false;
+
+      if (!show) return;
+
+      idx++;
+      const tr = document.createElement("tr");
+      tr.dataset.index = i;
+
+      const period = (item.yearMin && item.yearMax)
+        ? (item.yearMin === item.yearMax ? String(item.yearMin) : item.yearMin + "–" + item.yearMax)
+        : "-";
+
+      const pctText = (item.pctOtr != null && !isNaN(item.pctOtr))
+        ? item.pctOtr.toFixed(2) + " %"
+        : "-";
+
+      const totalKmText = (item.totalKm != null && item.totalKm > 0)
+        ? item.totalKm.toLocaleString("id-ID") + " km"
+        : "-";
+
+      const cpkText = (item.cpk != null && !isNaN(item.cpk))
+        ? "Rp " + Math.round(item.cpk).toLocaleString("id-ID") + " /km"
+        : "-";
+
+      if (Number(i) === Number(selectedIndex)) {
+        tr.classList.add("selected");
+      }
+
+      tr.innerHTML = `
+        <td>${idx}</td>
+        <td>${item.nopol}</td>
+        <td>${item.noRangka}</td>
+        <td>${item.customer || "-"}</td>
+        <td>${item.merk || "-"}</td>
+        <td>${item.type || "-"}</td>
+        <td>${item.tahunUnit || "-"}</td>
+        <td>${period}</td>
+        <td>${item.jumlahSpk}</td>
+        <td>${formatRupiah(item.totalBiaya)}</td>
+        <td>${formatRupiah(Math.round(item.avgPerYear))}</td>
+        <td>${item.otrEst ? formatRupiah(item.otrEst) : "-"}</td>
+        <td>${pctText}</td>
+        <td>${totalKmText}</td>
+        <td>${cpkText}</td>
+        <td>
+          ${
+            st.label === "-"
+              ? "<span class='muted'>-</span>"
+              : `<span class="badge ${st.class}">${st.label}</span>`
+          }
+        </td>
+      `;
+      tr.addEventListener("click", () => {
+        selectedIndex = i;
+        renderTable();
+        showDetail(item);
+      });
+
+      habitBody.appendChild(tr);
+    });
+
+    if (!idx) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td colspan="16" style="text-align:center; padding:10px; color:#6b7280;">Tidak ada data yang cocok filter / file kosong.</td>`;
+      habitBody.appendChild(tr);
+      detailPanel.style.display = "none";
+    }
+  }
+
+  function analyzeUnit(item) {
+    const reasons = [];
+    const mitigations = [];
+
+    if (item.pctOtr != null && !isNaN(item.pctOtr)) {
+      if (item.pctOtr > 2) {
+        reasons.push("Biaya tahunan terhadap OTR > 2% → kategori boros secara nilai aset.");
+        mitigations.push("Tinjau ulang pola penggunaan unit, kemungkinan overload, rute berat, atau pemakaian yang agresif.");
+        mitigations.push("Evaluasi kontrak maintenance / part: cek apakah ada part yang bisa diganti ke alternatif OEM yang lebih efisien.");
+      } else if (item.pctOtr > 1) {
+        reasons.push("Biaya tahunan 1–2% dari OTR → masih dalam rentang normal, namun perlu dimonitor.");
+        mitigations.push("Pertahankan jadwal servis berkala; monitor jika ada lonjakan biaya tiba-tiba pada tahun tertentu.");
+      } else {
+        reasons.push("Biaya tahunan < 1% dari OTR → terlihat hemat secara nilai aset.");
+        mitigations.push("Pastikan hemat bukan karena service terlalu jarang; cek risiko kerusakan besar yang tertunda.");
+      }
+    } else {
+      reasons.push("Data %OTR/Tahun tidak lengkap (OTR estimasi tidak terbaca).");
+      mitigations.push("Periksa kembali Merk, Type, dan Tahun Unit untuk memperbaiki estimasi OTR.");
+    }
+
+    if (item.cpk != null && !isNaN(item.cpk)) {
+      const cpk = item.cpk;
+      if (cpk > 1000) {
+        reasons.push("CPK > 1.000 Rp/km → biaya per km tinggi, indikasi habit pemakaian/medan berat atau perawatan tidak efisien.");
+        mitigations.push("Audit histori SPK: banyak ganti part yang sama berulang atau kerusakan karena penggunaan?");
+        mitigations.push("Review cara mengemudi, beban muatan, dan rute (jalan rusak/tanjakan) yang men-drive biaya.");
+      } else if (cpk > 400) {
+        reasons.push("CPK 400–1.000 Rp/km → biaya per km moderat, masih wajar untuk operasional harian.");
+        mitigations.push("Fokus ke preventif maintenance agar tidak lompat ke kategori boros.");
+      } else {
+        reasons.push("CPK < 400 Rp/km → biaya per km rendah, unit relatif efisien.");
+        mitigations.push("Pertahankan pattern service saat ini; dokumentasikan sebagai benchmark untuk unit lain.");
+      }
+    } else {
+      reasons.push("Data Odo Meter tidak lengkap → CPK tidak bisa dihitung.");
+      mitigations.push("Pastikan setiap SPK mencatat Odo Meter secara konsisten agar CPK bisa dianalisa.");
+    }
+
+    if (item.jumlahSpk >= 8) {
+      reasons.push("Jumlah SPK tinggi untuk satu unit → frekuensi masuk bengkel sering.");
+      mitigations.push("Analisa penyebab dominan: kerusakan berulang atau hanya service rutin kecil; jadwalkan bundling pekerjaan jika memungkinkan.");
+    }
+
+    return { reasons, mitigations };
+  }
+
+  function showDetail(item) {
+    if (!item) {
+      detailPanel.style.display = "none";
+      return;
+    }
+    detailPanel.style.display = "block";
+
+    detailTitle.textContent = `${item.nopol} • ${item.merk || ""} ${item.type || ""}`.trim();
+    detailSubtitle.textContent = `No. Rangka: ${item.noRangka} • Customer: ${item.customer || "-"}`;
+
+    const st = statusFromPct(item.pctOtr);
+    if (st.label === "-") {
+      detailStatus.innerHTML = "";
+    } else {
+      detailStatus.innerHTML = `<span class="badge ${st.class}">${st.label}</span>`;
+    }
+
+    detailAvgPerYear.textContent = formatRupiah(Math.round(item.avgPerYear));
+    detailOtr.textContent = item.otrEst ? formatRupiah(item.otrEst) : "-";
+    detailPctOtr.textContent = (item.pctOtr != null && !isNaN(item.pctOtr))
+      ? item.pctOtr.toFixed(2) + " %"
+      : "-";
+
+    detailKm.textContent = (item.totalKm != null && item.totalKm > 0)
+      ? item.totalKm.toLocaleString("id-ID") + " km"
+      : "-";
+
+    detailCpk.textContent = (item.cpk != null && !isNaN(item.cpk))
+      ? "Rp " + Math.round(item.cpk).toLocaleString("id-ID") + " / km"
+      : "-";
+
+    const analysis = analyzeUnit(item);
+    detailReasons.innerHTML = "";
+    analysis.reasons.forEach(r => {
+      const li = document.createElement("li");
+      li.textContent = r;
+      detailReasons.appendChild(li);
+    });
+    detailMitigations.innerHTML = "";
+    analysis.mitigations.forEach(m => {
+      const li = document.createElement("li");
+      li.textContent = m;
+      detailMitigations.appendChild(li);
+    });
+  }
+
+  filterNopol.addEventListener("input", renderTable);
+  filterCustomer.addEventListener("input", renderTable);
+  filterMerk.addEventListener("input", renderTable);
+  filterStatus.addEventListener("change", renderTable);
+
+  // ===== Export Excel (CSV) =====
+  btnExportCsv.addEventListener("click", () => {
+    if (!habitData.length) {
+      alert("Belum ada data untuk diexport.");
+      return;
+    }
+
+    const rows = [];
+    rows.push([
+      "No",
+      "No Polisi",
+      "No Rangka",
+      "Customer",
+      "Merk",
+      "Type",
+      "Tahun Unit",
+      "Periode SPK",
+      "Jumlah SPK",
+      "Total Biaya",
+      "Avg/Tahun",
+      "OTR Estimasi",
+      "%OTR/Tahun",
+      "Total Km",
+      "CPK (Rp/km)"
+    ]);
+
+    let no = 0;
+    const nopolFilter = filterNopol.value.trim().toLowerCase();
+    const custFilter = filterCustomer.value.trim().toLowerCase();
+    const merkFilter = filterMerk.value.trim().toLowerCase();
+    const statusFilter = filterStatus.value;
+
+    habitData.forEach(item => {
+      let show = true;
+      if (nopolFilter && !item.nopol.toLowerCase().includes(nopolFilter)) show = false;
+      if (custFilter && !(item.customer || "").toLowerCase().includes(custFilter)) show = false;
+      if (merkFilter && !(item.merk || "").toLowerCase().includes(merkFilter)) show = false;
+      const st = statusFromPct(item.pctOtr);
+      if (statusFilter && st.key !== statusFilter) show = false;
+      if (!show) return;
+
+      no++;
+      const period = (item.yearMin && item.yearMax)
+        ? (item.yearMin === item.yearMax ? String(item.yearMin) : item.yearMin + "–" + item.yearMax)
+        : "-";
+      const pct = (item.pctOtr != null && !isNaN(item.pctOtr)) ? item.pctOtr.toFixed(2) : "";
+      const km = (item.totalKm != null && item.totalKm > 0) ? item.totalKm : "";
+      const cpk = (item.cpk != null && !isNaN(item.cpk)) ? Math.round(item.cpk) : "";
+
+      rows.push([
+        no,
+        item.nopol,
+        item.noRangka,
+        item.customer || "",
+        item.merk || "",
+        item.type || "",
+        item.tahunUnit || "",
+        period,
+        item.jumlahSpk,
+        item.totalBiaya,
+        Math.round(item.avgPerYear),
+        item.otrEst || "",
+        pct,
+        km,
+        cpk
+      ]);
+    });
+
+    const csv = rows.map(r =>
+      r.map(v => {
+        const s = String(v ?? "");
+        if (s.includes(",") || s.includes(";") || s.includes('"')) {
+          return '"' + s.replace(/"/g,'""') + '"';
+        }
+        return s;
+      }).join(",")
+    ).join("\n");
+
+    const blob = new Blob([csv], { type:"text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "HISTORI_CALCULATOR_DADANG.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  // ===== Export PDF (print) =====
+  btnExportPdf.addEventListener("click", () => {
+    if (!habitData.length) {
+      alert("Belum ada data untuk diexport.");
+      return;
+    }
+    window.print();
+  });
+</script>
+</body>
+</html>
