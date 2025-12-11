@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>KALLA TRANSPORT & LOGISTICS - Service Reminder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f4f4f4; }
+    header {
+      background: #065f46; color: #fff; padding: 16px 24px;
+      display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+    }
+    .brand-left { display:flex; align-items:center; gap:12px; }
+    #logoPreview {
+      width:60px; height:60px; border-radius:12px; object-fit:contain;
+      background:#ffffff10; border:1px solid #ffffff30; padding:4px;
+    }
+    .brand-text h1 { margin:0; font-size:22px; letter-spacing:1px; }
+    .brand-text small { font-size:11px; opacity:0.9; }
+    header .right small { font-size:12px; opacity:0.85; display:block; text-align:right; }
+
+    main { max-width:1200px; margin:0 auto; padding:16px; }
+    .card {
+      background:#fff; border-radius:10px; padding:16px; margin-bottom:16px;
+      box-shadow:0 1px 4px rgba(0,0,0,0.08);
+    }
+    .card h2 {
+      margin-top:0; font-size:16px;
+      display:flex; justify-content:space-between; align-items:center; gap:8px;
+    }
+    .card h2 span.small { font-size:12px; color:#555; font-weight:normal; }
+    form {
+      display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+      gap:8px 12px; align-items:flex-end;
+    }
+    label { font-size:12px; margin-bottom:4px; display:block; color:#333; }
+    input[type="text"], input[type="date"], input[type="number"], select {
+      width:100%; box-sizing:border-box; padding:6px 8px;
+      border-radius:4px; border:1px solid:#ccc; font-size:13px;
+    }
+    input[type="file"] { font-size:13px; padding:6px 8px; }
+
+    .btn { padding:8px 12px; border-radius:4px; border:none; cursor:pointer; font-size:13px; font-weight:600; }
+    .btn-primary { background:#2563eb; color:#fff; }
+    .btn-secondary { background:#e5e7eb; color:#111827; }
+    .btn-danger { background:#dc2626; color:#fff; }
+    .btn-sm { padding:4px 8px; font-size:12px; }
+
+    .toolbar { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
+    .toolbar .left, .toolbar .right { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .toolbar input[type="search"] {
+      padding:6px 8px; border-radius:4px; border:1px solid:#ccc; font-size:13px;
+    }
+
+    table { width:100%; border-collapse:collapse; font-size:12px; }
+    thead { background:#111827; color:#fff; }
+    th, td { padding:6px 8px; border-bottom:1px solid #e5e7eb; text-align:left; }
+    tbody tr:nth-child(even) { background:#f9fafb; }
+
+    .badge { padding:2px 6px; border-radius:999px; font-size:11px; font-weight:600; display:inline-block; }
+    .badge-aman { background:#d1fae5; color:#065f46; }
+    .badge-warning { background:#fef3c7; color:#92400e; }
+    .badge-urgent { background:#fee2e2; color:#b91c1c; }
+    .badge-late { background:#b91c1c; color:#fee2e2; }
+
+    tr.status-warning { background:#fffbeb; }
+    tr.status-urgent { background:#fef3c7; }
+    tr.status-late { background:#fee2e2; }
+
+    .small-text { font-size:11px; color:#6b7280; }
+    .banner {
+      background:#ecfdf5; border:1px solid #6ee7b7; color:#065f46;
+      padding:8px 12px; border-radius:6px; font-size:12px;
+      margin-bottom:12px; display:none;
+    }
+
+    @media (max-width:640px) {
+      header { flex-direction:column; align-items:flex-start; }
+      header .right small { text-align:left; }
+      table { font-size:11px; }
+    }
+
+    @media print {
+      body { background:#fff; }
+      header, .card.logo-card, #clearDataBtn, #csvInput { display:none !important; }
+      main { max-width:100%; margin:0; padding:0 10mm; }
+      .card { box-shadow:none; border-radius:0; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand-left">
+      <img id="logoPreview" alt="Logo KALLA" />
+      <div class="brand-text">
+        <h1>KALLA TRANSPORT & LOGISTICS</h1>
+        <small>Service Reminder • Interval 10.000 KM / 6 Bulan</small>
+      </div>
+    </div>
+    <div class="right">
+      <small>Manual input + Import CSV histori SPK</small>
+      <small>Versi 3.2</small>
+    </div>
+  </header>
+
+  <main>
+    <!-- Logo & CSV -->
+    <section class="card logo-card">
+      <h2>Logo & Import Histori Service</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;">
+        <div>
+          <label for="logoInput">Upload Logo (png/jpg)</label>
+          <input type="file" id="logoInput" accept="image/*" />
+          <p class="small-text">Logo KALLA disimpan offline dan tampil di header & PDF.</p>
+        </div>
+        <div>
+          <label for="csvInput">Import CSV Histori SPK</label>
+          <input type="file" id="csvInput" accept=".csv,text/csv" />
+          <p class="small-text">
+            Header yang dipakai (baris pertama):<br/>
+            <strong>No. Polisi, customer, TANGGAL TERAKIR SERVICE, Max. of Odo Meter Service</strong><br/>
+            Delimiter boleh koma, titik koma, atau TAB.
+          </p>
+        </div>
+        <div>
+          <p class="small-text">
+            Status warna:<br/>
+            <span class="badge badge-aman">AMAN</span> &gt; 60 hari<br/>
+            <span class="badge badge-warning">WASPADA</span> 31–60 hari<br/>
+            <span class="badge badge-urgent">MENDESAK</span> ≤ 30 hari<br/>
+            <span class="badge badge-late">TELAT</span> lewat Due Date
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Form manual -->
+    <section class="card">
+      <h2>
+        Manual Input / Edit Unit Service
+        <span class="small" id="formModeLabel">(mode: tambah baru)</span>
+      </h2>
+      <form id="serviceForm">
+        <div>
+          <label for="unitName">Nama Unit / Kendaraan</label>
+          <input type="text" id="unitName" required />
+        </div>
+        <div>
+          <label for="plateNumber">Plat Nomor</label>
+          <input type="text" id="plateNumber" required />
+        </div>
+        <div>
+          <label for="brandType">Customer / Merk / Tipe</label>
+          <input type="text" id="brandType" />
+        </div>
+        <div>
+          <label for="lastServiceKm">KM Service Terakhir</label>
+          <input type="number" id="lastServiceKm" min="0" step="100" required />
+        </div>
+        <div>
+          <label for="lastServiceDate">Tanggal Service Terakhir</label>
+          <input type="date" id="lastServiceDate" required />
+        </div>
+        <div>
+          <label for="currentKm">KM Sekarang (opsional)</label>
+          <input type="number" id="currentKm" min="0" step="100" />
+        </div>
+        <div>
+          <label for="intervalKm">Interval KM (default 10000)</label>
+          <input type="number" id="intervalKm" min="1000" step="500" value="10000" />
+        </div>
+        <div>
+          <label for="intervalMonths">Interval Bulan (default 6)</label>
+          <input type="number" id="intervalMonths" min="1" max="24" value="6" />
+        </div>
+        <div>
+          <button type="submit" class="btn btn-primary">Simpan</button>
+          <button type="button" id="cancelEditBtn" class="btn btn-secondary">Batal Edit</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Dashboard -->
+    <section class="card">
+      <div class="toolbar">
+        <div class="left">
+          <h2 style="margin:0;">Dashboard Reminder Service</h2>
+          <span class="small-text" id="summaryText"></span><br/>
+          <span class="small-text" id="summaryStatus"></span>
+        </div>
+        <div class="right">
+          <input type="search" id="searchInput" placeholder="Cari unit / plat / customer..." />
+          <button type="button" id="exportCsvBtn" class="btn btn-primary btn-sm">
+            Export Excel (TELAT/WASPADA/MENDESAK)
+          </button>
+          <button type="button" id="exportPdfBtn" class="btn btn-secondary btn-sm">
+            Export PDF (warna prioritas)
+          </button>
+          <button type="button" id="clearDataBtn" class="btn btn-danger btn-sm">Reset Semua Data</button>
+        </div>
+      </div>
+
+      <div id="alertBanner" class="banner"></div>
+
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>No. Polisi</th>
+              <th>Customer / Unit</th>
+              <th>KM Terakhir</th>
+              <th>Tanggal Service Terakhir</th>
+              <th>KM Next (+10.000)</th>
+              <th>Due Date (+6 bulan)</th>
+              <th>Sisa Hari</th>
+              <th>Status</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="serviceBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = 'kallaServiceManualCsvV1';
+    const LOGO_KEY = 'kallaServiceLogoManualCsv';
+
+    let services = [];
+    let editId = null;
+    let logoDataUrl = null;
+
+    function safeLoadJSON(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return fallback;
+        const parsed = JSON.parse(raw);
+        return parsed ?? fallback;
+      } catch { return fallback; }
+    }
+
+    // ===== Logo =====
+    function loadLogo() {
+      const data = localStorage.getItem(LOGO_KEY);
+      const img = document.getElementById('logoPreview');
+      if (!data) {
+        logoDataUrl = null;
+        img.style.display = 'none';
+        return;
+      }
+      logoDataUrl = data;
+      img.src = logoDataUrl;
+      img.style.display = 'block';
+    }
+
+    function handleLogoChange(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        logoDataUrl = ev.target.result;
+        try { localStorage.setItem(LOGO_KEY, logoDataUrl); } catch {}
+        const img = document.getElementById('logoPreview');
+        img.src = logoDataUrl;
+        img.style.display = 'block';
+        alert('Logo berhasil disimpan.');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // ===== Util tanggal =====
+    function parseDateSmart(str) {
+      if (!str) return null;
+      const s = String(str).trim();
+      if (!s) return null;
+
+      let d = new Date(s);
+      if (!isNaN(d)) return d;
+
+      const cleaned = s.replace(/[-\/\.]/g, ' ');
+      const parts = cleaned.split(/\s+/).filter(Boolean);
+      if (parts.length < 3) return null;
+
+      const day = parseInt(parts[0], 10);
+      const monthToken = parts[1].toLowerCase();
+      const yearToken = parts[2];
+
+      const monthMap = {
+        jan:0, januari:0,
+        feb:1, februari:1,
+        mar:2, maret:2,
+        apr:3, april:3,
+        may:4, mei:4,
+        jun:5, juni:5,
+        jul:6, juli:6,
+        aug:7, agu:7, agt:7, agustus:7,
+        sep:8, sept:8, september:8,
+        oct:9, okt:9, oktober:9,
+        nov:10, november:10,
+        dec:11, des:11, desember:11
+      };
+
+      let month;
+      if (monthToken in monthMap) {
+        month = monthMap[monthToken];
+      } else {
+        const mNum = parseInt(monthToken, 10);
+        if (!isNaN(mNum) && mNum >= 1 && mNum <= 12) month = mNum - 1;
+        else return null;
+      }
+
+      let year = parseInt(yearToken, 10);
+      if (isNaN(year)) return null;
+      if (year < 100) year += 2000;
+
+      d = new Date(year, month, day);
+      if (isNaN(d)) return null;
+      return d;
+    }
+
+    function addMonths(dateObj, months) {
+      if (!dateObj) return null;
+      const d = new Date(dateObj.getTime());
+      const day = d.getDate();
+      d.setMonth(d.getMonth() + months);
+      if (d.getDate() < day) d.setDate(0);
+      return d;
+    }
+
+    function daysDiffFromToday(dateObj) {
+      if (!dateObj) return null;
+      const today = new Date(); today.setHours(0,0,0,0);
+      const due = new Date(dateObj); due.setHours(0,0,0,0);
+      const diffMs = due.getTime() - today.getTime();
+      return Math.round(diffMs / 86400000);
+    }
+
+    function formatDateId(dateObjOrStr) {
+      if (!dateObjOrStr) return '-';
+      const d = (dateObjOrStr instanceof Date) ? dateObjOrStr : new Date(dateObjOrStr);
+      if (isNaN(d)) return '-';
+      const day = String(d.getDate()).padStart(2,'0');
+      const month = String(d.getMonth()+1).padStart(2,'0');
+      const year = d.getFullYear();
+      return `${day}-${month}-${year}`;
+    }
+
+    function escapeHtml(text) {
+      return String(text || '')
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+        .replace(/'/g,'&#039;');
+    }
+
+    // ===== Status =====
+    function computeStatus(item) {
+      const intervalKm = Number(item.intervalKm || 10000);
+      const intervalMonths = Number(item.intervalMonths || 6);
+      const lastKm = Number(item.lastServiceKm || 0);
+
+      const dueKm = lastKm + (isNaN(intervalKm) ? 10000 : intervalKm);
+
+      const lastDateObj = item.lastServiceDate ? new Date(item.lastServiceDate) : null;
+      const dueDateObj = lastDateObj ? addMonths(lastDateObj, isNaN(intervalMonths) ? 6 : intervalMonths) : null;
+      const daysRemaining = dueDateObj ? daysDiffFromToday(dueDateObj) : null;
+
+      let level = 'AMAN';
+      if (daysRemaining !== null) {
+        if (daysRemaining < 0) level = 'TELAT';
+        else if (daysRemaining <= 30) level = 'MENDESAK';
+        else if (daysRemaining <= 60) level = 'WASPADA';
+      }
+
+      let badgeClass = 'badge-aman';
+      let rowClass = '';
+      if (level === 'TELAT') { badgeClass='badge-late'; rowClass='status-late'; }
+      else if (level === 'MENDESAK') { badgeClass='badge-urgent'; rowClass='status-urgent'; }
+      else if (level === 'WASPADA') { badgeClass='badge-warning'; rowClass='status-warning'; }
+
+      return { level, dueKm, dueDateObj, daysRemaining, badgeClass, rowClass };
+    }
+
+    function formatDays(days) {
+      if (days === null) return '-';
+      if (days < 0) return days + ' hari (TELAT)';
+      if (days === 0) return '0 hari (hari ini)';
+      return days + ' hari';
+    }
+
+    // ===== Data =====
+    function loadData() {
+      const arr = safeLoadJSON(STORAGE_KEY, []);
+      services = Array.isArray(arr) ? arr : [];
+    }
+
+    function saveData() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(services)); } catch {}
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('serviceBody');
+      const search = document.getElementById('searchInput').value.toLowerCase().trim();
+      tbody.innerHTML = '';
+
+      const filtered = services.filter(r=>{
+        if (!search) return true;
+        return (r.plateNumber||'').toLowerCase().includes(search) ||
+               (r.unitName||'').toLowerCase().includes(search) ||
+               (r.brandType||'').toLowerCase().includes(search);
+      });
+
+      let warn=0, urgent=0, late=0;
+
+      filtered
+        .slice()
+        .sort((a,b)=>{
+          const sa = computeStatus(a);
+          const sb = computeStatus(b);
+          if (!sa.dueDateObj) return 1;
+          if (!sb.dueDateObj) return -1;
+          return sa.dueDateObj - sb.dueDateObj;
+        })
+        .forEach((r,i)=>{
+          const st = computeStatus(r);
+          if (st.level === 'TELAT') late++;
+          else if (st.level === 'MENDESAK') urgent++;
+          else if (st.level === 'WASPADA') warn++;
+
+          const tr = document.createElement('tr');
+          if (st.rowClass) tr.classList.add(st.rowClass);
+
+          tr.innerHTML = `
+            <td>${i+1}</td>
+            <td>${escapeHtml(r.plateNumber||'')}</td>
+            <td>${escapeHtml(r.unitName||r.brandType||'')}</td>
+            <td>${Number(r.lastServiceKm||0).toLocaleString('id-ID')}</td>
+            <td>${r.lastServiceDate ? formatDateId(r.lastServiceDate) : '-'}</td>
+            <td>${Number(st.dueKm||0).toLocaleString('id-ID')}</td>
+            <td>${st.dueDateObj ? formatDateId(st.dueDateObj) : '-'}</td>
+            <td>${formatDays(st.daysRemaining)}</td>
+            <td><span class="badge ${st.badgeClass}">${st.level}</span></td>
+            <td>
+              <button class="btn btn-secondary btn-sm" onclick="startEdit('${r.id}')">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteService('${r.id}')">Hapus</button>
+            </td>`;
+          tbody.appendChild(tr);
+        });
+
+      document.getElementById('summaryText').textContent =
+        `Total unit: ${services.length} | Ditampilkan: ${filtered.length}`;
+      document.getElementById('summaryStatus').textContent =
+        `TELAT: ${late} • MENDESAK: ${urgent} • WASPADA: ${warn}`;
+
+      const banner = document.getElementById('alertBanner');
+      if (late || urgent || warn) {
+        banner.style.display = 'block';
+        banner.innerHTML =
+          `<strong>Prioritas:</strong> TELAT ${late}, MENDESAK ${urgent}, WASPADA ${warn}.`;
+      } else {
+        banner.style.display = 'none';
+        banner.textContent = '';
+      }
+    }
+
+    // ===== Form manual =====
+    function handleSubmit(e) {
+      e.preventDefault();
+      const unitName = document.getElementById('unitName').value.trim();
+      const plateNumber = document.getElementById('plateNumber').value.trim();
+      const brandType = document.getElementById('brandType').value.trim();
+      const lastServiceKm = Number(document.getElementById('lastServiceKm').value || 0);
+      const lastServiceDate = document.getElementById('lastServiceDate').value;
+      const currentKm = Number(document.getElementById('currentKm').value || 0);
+      const intervalKm = Number(document.getElementById('intervalKm').value || 10000);
+      const intervalMonths = Number(document.getElementById('intervalMonths').value || 6);
+
+      if (!unitName || !plateNumber || !lastServiceDate || isNaN(lastServiceKm)) {
+        alert('Minimal isi: Unit, Plat, KM terakhir, Tanggal service terakhir.');
+        return;
+      }
+
+      const obj = {
+        unitName,
+        plateNumber,
+        brandType,
+        lastServiceKm,
+        lastServiceDate,
+        currentKm,
+        intervalKm,
+        intervalMonths
+      };
+
+      if (editId) {
+        const idx = services.findIndex(r=>r.id===editId);
+        if (idx!==-1) services[idx] = { ...services[idx], ...obj };
+      } else {
+        obj.id = 'svc-'+Date.now()+'-'+Math.random().toString(16).slice(2);
+        services.push(obj);
+      }
+
+      saveData();
+      resetForm();
+      renderTable();
+      alert('Data service disimpan. Total unit: '+services.length);
+    }
+
+    function resetForm() {
+      document.getElementById('serviceForm').reset();
+      document.getElementById('intervalKm').value = 10000;
+      document.getElementById('intervalMonths').value = 6;
+      editId = null;
+      document.getElementById('formModeLabel').textContent = '(mode: tambah baru)';
+    }
+
+    function startEdit(id) {
+      const item = services.find(r=>r.id===id);
+      if (!item) return;
+      editId = id;
+      document.getElementById('unitName').value = item.unitName||'';
+      document.getElementById('plateNumber').value = item.plateNumber||'';
+      document.getElementById('brandType').value = item.brandType||'';
+      document.getElementById('lastServiceKm').value = item.lastServiceKm||'';
+      document.getElementById('lastServiceDate').value = item.lastServiceDate||'';
+      document.getElementById('currentKm').value = item.currentKm||'';
+      document.getElementById('intervalKm').value = item.intervalKm||10000;
+      document.getElementById('intervalMonths').value = item.intervalMonths||6;
+      document.getElementById('formModeLabel').textContent = '(mode: EDIT data)';
+    }
+
+    function deleteService(id) {
+      if (!confirm('Yakin hapus data service unit ini?')) return;
+      services = services.filter(r=>r.id!==id);
+      saveData();
+      renderTable();
+    }
+
+    function clearData() {
+      if (!confirm('Reset SEMUA data service?')) return;
+      services = [];
+      saveData();
+      renderTable();
+      resetForm();
+    }
+
+    // ===== CSV Import – super simpel (perbaikan baris) =====
+    function handleCsvUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const text = ev.target.result || '';
+        if (!text.trim()) {
+          alert('File CSV kosong / tidak bisa dibaca.');
+          return;
+        }
+
+        // handle CRLF (\r\n), LF (\n), dan CR (\r)
+        const rawLines = text.split(/\r\n|\n|\r/);
+
+        // cari header: baris pertama yang tidak kosong
+        let headerIndex = 0;
+        while (headerIndex < rawLines.length && !rawLines[headerIndex].trim()) {
+          headerIndex++;
+        }
+        if (headerIndex >= rawLines.length) {
+          alert('CSV tidak punya header yang jelas.');
+          return;
+        }
+
+        const headerLine = rawLines[headerIndex];
+        const dataLines = rawLines
+          .slice(headerIndex + 1)
+          .filter(l => l && l.trim() !== '');
+
+        if (!dataLines.length) {
+          alert('CSV hanya berisi header, tidak ada baris data.');
+          return;
+        }
+
+        // header: No. Polisi, customer, TANGGAL TERAKIR SERVICE, Max. of Odo Meter Service
+        const headerParts = headerLine.split(/[,;|\t]/).map(h => h.trim().toLowerCase());
+
+        let idxPlate = headerParts.findIndex(h => h.startsWith('no. polisi') || h.includes('nopol'));
+        let idxCust  = headerParts.findIndex(h => h.startsWith('customer') || h.startsWith('custome'));
+        let idxDate  = headerParts.findIndex(h => h.includes('tanggal') && h.includes('service'));
+        let idxKm    = headerParts.findIndex(h => h.includes('max.') && h.includes('odo'));
+        if (idxKm < 0) idxKm = headerParts.findIndex(h => h.includes('max') && h.includes('odo'));
+
+        // fallback kalau nama header beda sedikit / urutan beda
+        if (idxPlate < 0) idxPlate = 0;
+        if (idxCust  < 0) idxCust  = 1;
+        if (idxDate  < 0) idxDate  = 2;
+        if (idxKm    < 0) idxKm    = 3;
+
+        const newItems = [];
+        let skipped = 0;
+
+        for (const line of dataLines) {
+          const parts = line.split(/[,;|\t]/);
+
+          const plate = (parts[idxPlate] || '').trim().replace(/^"|"$/g, '');
+          const customer = (parts[idxCust] || '').trim().replace(/^"|"$/g, '');
+          const lastDateRaw = (parts[idxDate] || '').trim().replace(/^"|"$/g, '');
+          let lastKmRaw = (parts[idxKm] || '').trim().replace(/^"|"$/g, '');
+
+          if (!plate && !customer && !lastDateRaw && !lastKmRaw) {
+            skipped++;
+            continue;
+          }
+
+          lastKmRaw = lastKmRaw.replace(/\./g, '').replace(/\s/g, '');
+          const lastKm = lastKmRaw ? Number(lastKmRaw) : 0;
+
+          let iso = '';
+          if (lastDateRaw) {
+            const d = parseDateSmart(lastDateRaw);
+            if (d && !isNaN(d)) {
+              iso = d.toISOString().slice(0, 10);
+            }
+          }
+
+          newItems.push({
+            id: 'svc-' + Date.now() + '-' + Math.random().toString(16).slice(2),
+            unitName: customer || plate,
+            plateNumber: plate,
+            brandType: customer,
+            lastServiceKm: lastKm,
+            lastServiceDate: iso,
+            currentKm: lastKm,
+            intervalKm: 10000,
+            intervalMonths: 6
+          });
+        }
+
+        if (!newItems.length) {
+          alert('CSV terbaca, tapi tidak ada baris data setelah header.');
+          return;
+        }
+
+        const replace = confirm(
+          'Import CSV selesai.\n' +
+          '- Baris terbaca: ' + newItems.length + '\n' +
+          '- Baris dilewati: ' + skipped + '\n\n' +
+          'OK = GANTI semua data lama\n' +
+          'Cancel = TAMBAH di bawah data yang ada'
+        );
+
+        if (replace) services = newItems;
+        else services = services.concat(newItems);
+
+        saveData();
+        renderTable();
+        alert('Import selesai. Total unit sekarang: ' + services.length);
+      };
+
+      reader.readAsText(file, 'utf-8');
+    }
+
+    // ===== Export CSV non-aman =====
+    function exportCsv() {
+      const lines = ['Perusahaan,No. Polisi,Customer/Unit,Status,KM Terakhir,KM Next,Last Service,Due Date,Sisa Hari'];
+      let total = 0;
+
+      services.forEach(s=>{
+        const st = computeStatus(s);
+        if (st.level === 'AMAN') return;
+        total++;
+        lines.push([
+          '"KALLA TRANSPORT & LOGISTICS"',
+          `"${(s.plateNumber||'').replace(/"/g,'""')}"`,
+          `"${(s.unitName||s.brandType||'').replace(/"/g,'""')}"`,
+          `"${st.level}"`,
+          `"${s.lastServiceKm}"`,
+          `"${st.dueKm}"`,
+          `"${s.lastServiceDate ? formatDateId(s.lastServiceDate) : ''}"`,
+          `"${st.dueDateObj ? formatDateId(st.dueDateObj) : ''}"`,
+          `"${st.daysRemaining != null ? st.daysRemaining : ''}"`
+        ].join(','));
+      });
+
+      if (!total) {
+        alert('Tidak ada unit dengan status TELAT / WASPADA / MENDESAK.');
+        return;
+      }
+
+      const blob = new Blob([lines.join('\r\n')], { type:'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'KALLA_service_reminder_non_aman.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // ===== Export PDF non-aman =====
+    function exportPdf() {
+      const items = services
+        .map(s => ({ ...s, st: computeStatus(s) }))
+        .filter(x => x.st.level !== 'AMAN');
+
+      if (!items.length) {
+        alert('Tidak ada unit dengan status TELAT / WASPADA / MENDESAK.');
+        return;
+      }
+
+      const buckets = [
+        { key:'TELAT', label:'TELAT (LEBIH DARI DUE DATE)' },
+        { key:'MENDESAK', label:'MENDESAK (≤ 30 HARI KE DUE DATE)' },
+        { key:'WASPADA', label:'WASPADA (31–60 HARI KE DUE DATE)' }
+      ];
+
+      let sectionsHtml = '';
+      buckets.forEach(bucket=>{
+        const arr = items
+          .filter(x=>x.st.level===bucket.key)
+          .sort((a,b)=>{
+            if (!a.st.dueDateObj) return 1;
+            if (!b.st.dueDateObj) return -1;
+            return a.st.dueDateObj - b.st.dueDateObj;
+          });
+
+        if (!arr.length) return;
+
+        let rowsHtml = '';
+        arr.forEach((x,idx)=>{
+          const r = x;
+          const st = x.st;
+          let rowClass = '';
+          if (st.level === 'TELAT') rowClass='row-late';
+          else if (st.level === 'MENDESAK') rowClass='row-urgent';
+          else if (st.level === 'WASPADA') rowClass='row-warning';
+
+          rowsHtml += `
+            <tr class="${rowClass}">
+              <td>${idx+1}</td>
+              <td>${escapeHtml(r.plateNumber||'')}</td>
+              <td>${escapeHtml(r.unitName||r.brandType||'')}</td>
+              <td>${r.lastServiceKm}</td>
+              <td>${r.lastServiceDate ? formatDateId(r.lastServiceDate) : '-'}</td>
+              <td>${st.dueKm}</td>
+              <td>${st.dueDateObj ? formatDateId(st.dueDateObj) : '-'}</td>
+              <td>${st.daysRemaining != null ? st.daysRemaining : '-'}</td>
+            </tr>`;
+        });
+
+        sectionsHtml += `
+          <h2 class="section-title">${bucket.label}</h2>
+          <table class="section-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>No. Polisi</th>
+                <th>Customer / Unit</th>
+                <th>KM Terakhir</th>
+                <th>Last Service</th>
+                <th>KM Next</th>
+                <th>Due Date</th>
+                <th>Sisa Hari</th>
+              </tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>`;
+      });
+
+      const today = new Date();
+      const dateStr = String(today.getDate()).padStart(2,'0') + '-' +
+                      String(today.getMonth()+1).padStart(2,'0') + '-' +
+                      today.getFullYear();
+
+      const logoImg = logoDataUrl
+        ? `<img src="${logoDataUrl}" style="height:60px;margin-right:10px;object-fit:contain;border-radius:12px;border:1px solid #e5e7eb;padding:4px;" />`
+        : '';
+
+      const win = window.open('', '_blank');
+      win.document.write(`
+        <html><head><meta charset="UTF-8" />
+        <title>KALLA Service Reminder</title>
+        <style>
+          body{font-family:Arial,sans-serif;margin:0;padding:16px;}
+          .header{display:flex;align-items:center;border-bottom:2px solid #065f46;padding-bottom:8px;margin-bottom:12px;}
+          .brand{display:flex;align-items:center;gap:10px;}
+          h1{margin:0;font-size:22px;letter-spacing:1px;color:#065f46;}
+          .meta{font-size:12px;color:#4b5563;margin-top:4px;}
+          .section-title{
+            margin:16px 0 6px 0;font-size:14px;font-weight:700;
+            text-transform:uppercase;color:#111827;border-left:4px solid #111827;padding-left:6px;
+          }
+          .section-table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:8px;}
+          .section-table th,.section-table td{padding:4px 6px;border:1px solid #d1d5db;text-align:left;}
+          .section-table thead{background:#111827;color:#fff;}
+          .legend{font-size:11px;margin-top:4px;color:#4b5563;}
+          .legend span{padding:2px 6px;border-radius:999px;margin-right:4px;}
+          .row-late    { background:#fee2e2; }
+          .row-urgent  { background:#fef3c7; }
+          .row-warning { background:#fffbeb; }
+        </style></head>
+        <body>
+          <div class="header">
+            <div class="brand">
+              ${logoImg}
+              <div>
+                <h1>KALLA TRANSPORT & LOGISTICS</h1>
+                <div class="meta">
+                  Laporan Reminder Service (TELAT / MENDESAK / WASPADA)<br/>
+                  Tanggal export: ${dateStr}
+                </div>
+                <div class="legend">
+                  <span style="background:#fee2e2;">TELAT</span>
+                  <span style="background:#fef3c7;">MENDESAK</span>
+                  <span style="background:#fffbeb;">WASPADA</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          ${sectionsHtml}
+        </body></html>`);
+      win.document.close();
+      win.focus();
+      win.print();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadLogo();
+      loadData();
+      renderTable();
+
+      document.getElementById('logoInput').addEventListener('change', handleLogoChange);
+      document.getElementById('serviceForm').addEventListener('submit', handleSubmit);
+      document.getElementById('cancelEditBtn').addEventListener('click', resetForm);
+      document.getElementById('clearDataBtn').addEventListener('click', clearData);
+      document.getElementById('searchInput').addEventListener('input', renderTable);
+      document.getElementById('csvInput').addEventListener('change', handleCsvUpload);
+      document.getElementById('exportCsvBtn').addEventListener('click', exportCsv);
+      document.getElementById('exportPdfBtn').addEventListener('click', exportPdf);
+    });
+  </script>
+</body>
+</html>

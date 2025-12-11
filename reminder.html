@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>KALLA TRANSPORT & LOGISTICS - Reminder Pajak & KIR</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f4f4f4; }
+
+    /* HEADER dibuat mirip file KALLA TRANSLOG (bar hijau) */
+    header {
+      background: #065f46; /* hijau sama seperti KALLA */
+      color: #fff;
+      padding: 16px 24px;
+      display:flex; justify-content:space-between;
+      align-items:center; flex-wrap:wrap; gap:12px;
+    }
+    .brand-left { display:flex; align-items:center; gap:12px; }
+    #logoPreview {
+      width:60px; height:60px;            /* disamakan dengan KALLA */
+      border-radius:12px;
+      object-fit:contain;
+      background:#ffffff10;
+      border:1px solid #ffffff30;
+      padding:4px;
+    }
+    .brand-text h1 { margin:0; font-size:22px; letter-spacing:1px; }
+    .brand-text small { font-size:11px; opacity:0.85; }
+    header .right small { font-size:12px; opacity:0.8; display:block; text-align:right; }
+
+    main { max-width:1200px; margin:0 auto; padding:16px; }
+    .card {
+      background:#fff; border-radius:10px; padding:16px; margin-bottom:16px;
+      box-shadow:0 1px 4px rgba(0,0,0,0.08);
+    }
+    .card h2 {
+      margin-top:0; font-size:16px;
+      display:flex; justify-content:space-between; align-items:center; gap:8px;
+    }
+    .card h2 span.small { font-size:12px; color:#555; font-weight:normal; }
+    form {
+      display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+      gap:8px 12px; align-items:flex-end;
+    }
+    label { font-size:12px; margin-bottom:4px; display:block; color:#333; }
+    input[type="text"], input[type="date"], input[type="number"], select {
+      width:100%; box-sizing:border-box; padding:6px 8px;
+      border-radius:4px; border:1px solid:#ccc; font-size:13px;
+    }
+    input[type="file"] { font-size:12px; }
+
+    .btn { padding:8px 12px; border-radius:4px; border:none; cursor:pointer; font-size:13px; font-weight:600; }
+    .btn-primary { background:#2563eb; color:#fff; }
+    .btn-secondary { background:#e5e7eb; color:#111827; }
+    .btn-danger { background:#dc2626; color:#fff; }
+    .btn-sm { padding:4px 8px; font-size:12px; }
+
+    .toolbar { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
+    .toolbar .left, .toolbar .right { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .toolbar input[type="search"] {
+      padding:6px 8px; border-radius:4px; border:1px solid:#ccc; font-size:13px;
+    }
+
+    table { width:100%; border-collapse:collapse; font-size:12px; }
+    thead { background:#111827; color:#fff; }
+    th, td { padding:6px 8px; border-bottom:1px solid #e5e7eb; text-align:left; }
+    tbody tr:nth-child(even) { background:#f9fafb; }
+
+    .badge { padding:2px 6px; border-radius:999px; font-size:11px; font-weight:600; display:inline-block; }
+    .badge-aman { background:#d1fae5; color:#065f46; }
+    .badge-warning { background:#fef3c7; color:#92400e; }
+    .badge-urgent { background:#fee2e2; color:#b91c1c; }
+    .badge-late { background:#b91c1c; color:#fee2e2; }
+    tr.status-warning { background:#fffbeb; }
+    tr.status-urgent { background:#fef2f2; }
+    tr.status-late { background:#fef2f2; }
+
+    .small-text { font-size:11px; color:#6b7280; }
+    .highlight { font-weight:600; }
+    .banner {
+      background:#fef3c7; border:1px solid:#f59e0b; color:#92400e;
+      padding:8px 12px; border-radius:6px; font-size:12px;
+      margin-bottom:12px; display:none;
+    }
+
+    @media (max-width:640px) {
+      header { flex-direction:column; align-items:flex-start; }
+      header .right small { text-align:left; }
+      table { font-size:11px; }
+    }
+
+    @media print {
+      body { background:#fff; }
+      header, .card.logo-card, #clearDataBtn { display:none !important; }
+      main { max-width:100%; margin:0; padding:0 10mm; }
+      .card { box-shadow:none; border-radius:0; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand-left">
+      <img id="logoPreview" alt="Logo KALLA TRANSPORT & LOGISTICS" />
+      <div class="brand-text">
+        <h1>KALLA TRANSPORT & LOGISTICS</h1>
+        <small>Reminder Pajak Tahunan • Plat 5 Tahunan • KIR • SIO</small>
+      </div>
+    </div>
+    <div class="right">
+      <small>Dashboard Offline • Data tersimpan di browser (localStorage)</small>
+      <small>Versi 1.7 • Import CSV + Export TELAT/≤30/31–60 + warna PDF</small>
+    </div>
+  </header>
+
+  <main>
+    <!-- Pengaturan logo & import -->
+    <section class="card logo-card">
+      <h2>Pengaturan Logo & Import Data</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;">
+        <div>
+          <label for="logoInput">Upload Logo (png/jpg)</label>
+          <input type="file" id="logoInput" accept="image/*" />
+          <p class="small-text">Logo disimpan offline dan tampil di header & export PDF.</p>
+        </div>
+        <div>
+          <label for="csvInput">Import Data dari Excel (CSV)</label>
+          <input type="file" id="csvInput" accept=".csv,text/csv" />
+          <p class="small-text">
+            Format kolom CSV: Unit, Plat, Jenis, Tanggal(YYYY-MM-DD), Nominal<br/>
+            File dibuat dari Excel: <strong>Save As → CSV (Comma delimited)</strong>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Form input -->
+    <section class="card">
+      <h2>
+        Input / Edit Reminder Unit
+        <span class="small" id="formModeLabel">(mode: tambah baru)</span>
+      </h2>
+      <form id="reminderForm">
+        <div>
+          <label for="unitName">Nama Unit / Kendaraan</label>
+          <input type="text" id="unitName" placeholder="Contoh: Truk Fuso 01" required />
+        </div>
+        <div>
+          <label for="plateNumber">Plat Nomor</label>
+          <input type="text" id="plateNumber" placeholder="Contoh: DD 8750 MR" required />
+        </div>
+        <div>
+          <label for="docType">Jenis Dokumen</label>
+          <select id="docType" required>
+            <option value="">Pilih...</option>
+            <option value="Pajak Tahunan">Pajak Tahunan</option>
+            <option value="Plat 5 Tahunan">Plat 5 Tahunan</option>
+            <option value="KIR / Uji Berkala">KIR / Uji Berkala</option>
+            <option value="SIO / SIM / Surat Izin">SIO / SIM / Surat Izin</option>
+            <option value="Lainnya">Lainnya</option>
+          </select>
+        </div>
+        <div>
+          <label for="dueDate">Tanggal Jatuh Tempo</label>
+          <input type="date" id="dueDate" required />
+        </div>
+        <div>
+          <label for="amount">Nominal / Biaya (Rp)</label>
+          <input type="number" id="amount" min="0" step="1000" placeholder="Contoh: 500000" />
+        </div>
+        <div>
+          <button type="submit" class="btn btn-primary">Simpan</button>
+          <button type="button" id="cancelEditBtn" class="btn btn-secondary">Batal Edit</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Tabel & export -->
+    <section class="card">
+      <div class="toolbar">
+        <div class="left">
+          <h2 style="margin:0;">Daftar Reminder</h2>
+          <span class="small-text" id="summaryText"></span><br/>
+          <span class="small-text" id="nominalSummary"></span>
+        </div>
+        <div class="right">
+          <input type="search" id="searchInput" placeholder="Cari unit / plat / jenis..." />
+          <button type="button" id="exportSoonCsvBtn" class="btn btn-primary btn-sm">
+            Export Excel (TELAT + ≤ 60 hari)
+          </button>
+          <button type="button" id="exportSoonPdfBtn" class="btn btn-secondary btn-sm">
+            Export PDF (TELAT + ≤ 60 hari)
+          </button>
+          <button type="button" id="clearDataBtn" class="btn btn-danger btn-sm">Reset Semua Data</button>
+        </div>
+      </div>
+
+      <div id="alertBanner" class="banner"></div>
+
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Unit</th>
+              <th>Plat</th>
+              <th>Jenis</th>
+              <th>Jatuh Tempo</th>
+              <th>Sisa Hari</th>
+              <th>Status</th>
+              <th>Nominal (Rp)</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="reminderBody"></tbody>
+        </table>
+      </div>
+      <p class="small-text" style="margin-top:8px;">
+        Status:
+        <span class="badge badge-aman">AMAN</span> &gt; 60 hari •
+        <span class="badge badge-warning">WASPADA</span> 31–60 hari •
+        <span class="badge badge-urgent">MENDESAK</span> ≤ 30 hari •
+        <span class="badge badge-late">TELAT</span> lewat jatuh tempo
+      </p>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = 'reminderKendaraanV1';
+    const LOGO_KEY = 'timlogistikLogo';
+
+    let reminders = [];
+    let editId = null;
+    let logoDataUrl = null;
+
+    function safeLoadJSON(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return fallback;
+        const parsed = JSON.parse(raw);
+        return parsed ?? fallback;
+      } catch { return fallback; }
+    }
+
+    function formatRupiah(amount) {
+      const n = Number(amount);
+      if (!n || isNaN(n)) return '-';
+      return 'Rp ' + n.toLocaleString('id-ID');
+    }
+
+    function loadLogo() {
+      const data = localStorage.getItem(LOGO_KEY);
+      const img = document.getElementById('logoPreview');
+      if (!data) {
+        logoDataUrl = null;
+        img.style.display = 'none';
+        return;
+      }
+      logoDataUrl = data;
+      img.src = logoDataUrl;
+      img.style.display = 'block';
+    }
+
+    function handleLogoChange(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        logoDataUrl = ev.target.result;
+        try { localStorage.setItem(LOGO_KEY, logoDataUrl); } catch {}
+        const img = document.getElementById('logoPreview');
+        img.src = logoDataUrl;
+        img.style.display = 'block';
+        alert('Logo berhasil disimpan.');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function loadData() {
+      const arr = safeLoadJSON(STORAGE_KEY, []);
+      reminders = Array.isArray(arr) ? arr : [];
+    }
+
+    function saveData() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(reminders)); } catch {}
+    }
+
+    function calculateDaysRemaining(dateStr) {
+      if (!dateStr) return null;
+      const today = new Date(); today.setHours(0,0,0,0);
+      const due = new Date(dateStr); if (isNaN(due)) return null;
+      due.setHours(0,0,0,0);
+      const diffMs = due.getTime() - today.getTime();
+      return Math.round(diffMs / 86400000);
+    }
+
+    function getStatusInfo(days) {
+      if (days === null) return { label:'Tidak diketahui', className:'badge-warning', rowClass:'' };
+      if (days < 0) return { label:'TELAT', className:'badge-late', rowClass:'status-late' };
+      if (days <= 30) return { label:'MENDESAK', className:'badge-urgent', rowClass:'status-urgent' };
+      if (days <= 60) return { label:'WASPADA', className:'badge-warning', rowClass:'status-warning' };
+      return { label:'AMAN', className:'badge-aman', rowClass:'' };
+    }
+
+    function formatDays(days) {
+      if (days === null) return '-';
+      if (days < 0) return days + ' hari (TELAT)';
+      if (days === 0) return '0 hari (hari ini)';
+      return days + ' hari';
+    }
+
+    function formatDateId(dateStr) {
+      if (!dateStr) return '-';
+      const d = new Date(dateStr);
+      if (isNaN(d)) return dateStr;
+      const day = String(d.getDate()).padStart(2,'0');
+      const month = String(d.getMonth()+1).padStart(2,'0');
+      const year = d.getFullYear();
+      return `${day}-${month}-${year}`;
+    }
+
+    function escapeHtml(text) {
+      return String(text || '')
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+        .replace(/'/g,'&#039;');
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('reminderBody');
+      const search = document.getElementById('searchInput').value.toLowerCase().trim();
+      tbody.innerHTML = '';
+
+      let grandNominal = 0;
+      let soonNominal = 0;
+
+      reminders.forEach(r => {
+        const amt = Number(r.amount || 0);
+        if (!isNaN(amt) && amt > 0) {
+          grandNominal += amt;
+          const d = calculateDaysRemaining(r.dueDate);
+          if (d !== null && d <= 60) {
+            soonNominal += amt;
+          }
+        }
+      });
+
+      const filtered = reminders.filter(r => {
+        if (!search) return true;
+        return (r.unitName||'').toLowerCase().includes(search) ||
+               (r.plateNumber||'').toLowerCase().includes(search) ||
+               (r.docType||'').toLowerCase().includes(search);
+      });
+
+      let urgentCount = 0, lateCount = 0;
+
+      filtered
+        .slice()
+        .sort((a,b)=>{
+          if (!a.dueDate) return 1;
+          if (!b.dueDate) return -1;
+          return new Date(a.dueDate) - new Date(b.dueDate);
+        })
+        .forEach((r,i)=>{
+          const days = calculateDaysRemaining(r.dueDate);
+          const status = getStatusInfo(days);
+          if (days !== null) {
+            if (days < 0) lateCount++;
+            else if (days <= 30) urgentCount++;
+          }
+          const amt = Number(r.amount || 0);
+          const tr = document.createElement('tr');
+          if (status.rowClass) tr.classList.add(status.rowClass);
+          tr.innerHTML = `
+            <td>${i+1}</td>
+            <td>${escapeHtml(r.unitName||'')}</td>
+            <td>${escapeHtml(r.plateNumber||'')}</td>
+            <td>${escapeHtml(r.docType||'')}</td>
+            <td>${formatDateId(r.dueDate)}</td>
+            <td>${formatDays(days)}</td>
+            <td><span class="badge ${status.className}">${status.label}</span></td>
+            <td>${formatRupiah(amt)}</td>
+            <td>
+              <button class="btn btn-secondary btn-sm" onclick="startEdit('${r.id}')">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteReminder('${r.id}')">Hapus</button>
+            </td>`;
+          tbody.appendChild(tr);
+        });
+
+      document.getElementById('summaryText').textContent =
+        `Total reminder: ${reminders.length} | Ditampilkan: ${filtered.length}`;
+
+      document.getElementById('nominalSummary').textContent =
+        `Grand total nominal semua: ${formatRupiah(grandNominal)} | Total nominal TELAT + ≤ 60 hari: ${formatRupiah(soonNominal)}`;
+
+      const banner = document.getElementById('alertBanner');
+      if (urgentCount>0 || lateCount>0) {
+        banner.style.display = 'block';
+        banner.innerHTML =
+          `<strong>Perhatian!</strong> Ada <span class="highlight">${urgentCount}</span> mendesak (≤30 hari) dan <span class="highlight">${lateCount}</span> telat.`;
+      } else {
+        banner.style.display = 'none';
+        banner.textContent = '';
+      }
+    }
+
+    function handleSubmit(e) {
+      e.preventDefault();
+      const unitName = document.getElementById('unitName').value.trim();
+      const plateNumber = document.getElementById('plateNumber').value.trim();
+      const docType = document.getElementById('docType').value;
+      const dueDate = document.getElementById('dueDate').value;
+      let amountStr = document.getElementById('amount').value.trim();
+      let amount = amountStr ? Number(amountStr) : 0;
+      if (isNaN(amount) || amount < 0) amount = 0;
+
+      if (!unitName || !plateNumber || !docType || !dueDate) {
+        alert('Lengkapi semua field wajib.');
+        return;
+      }
+
+      if (editId) {
+        const idx = reminders.findIndex(r=>r.id===editId);
+        if (idx!==-1) {
+          reminders[idx].unitName = unitName;
+          reminders[idx].plateNumber = plateNumber;
+          reminders[idx].docType = docType;
+          reminders[idx].dueDate = dueDate;
+          reminders[idx].amount = amount;
+        }
+      } else {
+        reminders.push({
+          id: 'id-'+Date.now()+'-'+Math.random().toString(16).slice(2),
+          unitName, plateNumber, docType, dueDate, amount
+        });
+      }
+
+      saveData();
+      resetForm();
+      renderTable();
+      runImmediateReminder();
+      alert('Data disimpan. Total reminder: '+reminders.length);
+    }
+
+    function resetForm() {
+      document.getElementById('reminderForm').reset();
+      editId = null;
+      document.getElementById('formModeLabel').textContent = '(mode: tambah baru)';
+    }
+
+    function startEdit(id) {
+      const item = reminders.find(r=>r.id===id);
+      if (!item) return;
+      editId = id;
+      document.getElementById('unitName').value = item.unitName||'';
+      document.getElementById('plateNumber').value = item.plateNumber||'';
+      document.getElementById('docType').value = item.docType||'';
+      document.getElementById('dueDate').value = item.dueDate||'';
+      document.getElementById('amount').value = item.amount != null ? item.amount : '';
+      document.getElementById('formModeLabel').textContent = '(mode: EDIT data)';
+    }
+
+    function deleteReminder(id) {
+      if (!confirm('Yakin hapus reminder ini?')) return;
+      reminders = reminders.filter(r=>r.id!==id);
+      saveData();
+      renderTable();
+    }
+
+    function clearAllData() {
+      if (!confirm('Yakin reset SEMUA data reminder?')) return;
+      reminders = [];
+      saveData();
+      renderTable();
+      resetForm();
+    }
+
+    function runImmediateReminder() {
+      let urgentList=[], lateList=[];
+      reminders.forEach(r=>{
+        const days = calculateDaysRemaining(r.dueDate);
+        if (days===null) return;
+        if (days<0) lateList.push(`${r.unitName} – ${r.docType} (TELAT ${Math.abs(days)} hari)`);
+        else if (days<=30) urgentList.push(`${r.unitName} – ${r.docType} (${days} hari lagi)`);
+      });
+      if (!urgentList.length && !lateList.length) return;
+      let msg='⚠️ REMINDER:\n\n';
+      if (lateList.length) msg+='TELAT:\n'+lateList.join('\n')+'\n\n';
+      if (urgentList.length) msg+='MENDESAK (≤30 hari):\n'+urgentList.join('\n');
+      alert(msg);
+    }
+
+    function initialAlertIfNeeded() {
+      let urgent=0, late=0;
+      reminders.forEach(r=>{
+        const d = calculateDaysRemaining(r.dueDate);
+        if (d===null) return;
+        if (d<0) late++; else if (d<=30) urgent++;
+      });
+      if (urgent||late) {
+        alert(
+          'Reminder pajak/kir:\n'+
+          '- Mendesak (≤30 hari): '+urgent+'\n'+
+          '- Telat: '+late+'\n\n'+
+          'Cek tabel untuk detail.'
+        );
+      }
+    }
+
+    function handleCsvUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const text = ev.target.result || '';
+        if (!text.trim()) {
+          alert('File CSV kosong / tidak bisa dibaca.');
+          return;
+        }
+
+        const linesRaw = text.split(/\r?\n/);
+        const lines = linesRaw.filter(l => l.trim() !== '');
+        if (lines.length <= 1) {
+          alert('Tidak ada data (hanya header / kosong).');
+          return;
+        }
+
+        const headerLine = lines[0];
+        const countComma = (headerLine.match(/,/g) || []).length;
+        const countSemi  = (headerLine.match(/;/g) || []).length;
+        const delimiter = countSemi > countComma ? ';' : ',';
+
+        const startIndex = 1;
+        const newItems = [];
+        let skipped = 0;
+
+        for (let i = startIndex; i < lines.length; i++) {
+          const line = lines[i];
+          if (!line.trim()) continue;
+
+          const parts = line.split(delimiter);
+          if (parts.length < 4) { skipped++; continue; }
+
+          let unitName   = (parts[0] || '').trim().replace(/^"|"$/g,'');
+          let plateNumber= (parts[1] || '').trim().replace(/^"|"$/g,'');
+          let docTypeRaw = (parts[2] || '').trim().replace(/^"|"$/g,'');
+          let dueDate    = (parts[3] || '').trim().replace(/^"|"$/g,'');
+          let amountStr  = (parts[4] || '').trim().replace(/^"|"$/g,'');
+
+          if (!unitName && !plateNumber) { skipped++; continue; }
+          if (!dueDate) { skipped++; continue; }
+
+          let docType = 'Lainnya';
+          const dtLower = docTypeRaw.toLowerCase();
+          if (dtLower.includes('pajak') && dtLower.includes('tahun')) {
+            docType = 'Pajak Tahunan';
+          } else if (dtLower.includes('plat') || dtLower.includes('stnk')) {
+            docType = 'Plat 5 Tahunan';
+          } else if (dtLower.includes('kir') || dtLower.includes('uji')) {
+            docType = 'KIR / Uji Berkala';
+          } else if (dtLower.includes('sio') || dtLower.includes('sim') || dtLower.includes('izin')) {
+            docType = 'SIO / SIM / Surat Izin';
+          } else if (docTypeRaw) {
+            docType = docTypeRaw;
+          }
+
+          let amount = 0;
+          if (amountStr) {
+            amountStr = amountStr
+              .replace(/\./g,'')
+              .replace(/ /g,'')
+              .replace(/"/g,'')
+              .replace(/'/g,'');
+            const num = Number(amountStr);
+            if (!isNaN(num) && num >= 0) amount = num;
+          }
+
+          newItems.push({
+            id: 'id-'+Date.now()+'-'+Math.random().toString(16).slice(2),
+            unitName,
+            plateNumber,
+            docType,
+            dueDate,
+            amount
+          });
+        }
+
+        if (!newItems.length) {
+          alert('CSV terbaca tapi tidak ada baris valid.\nCek lagi urutan kolom: Unit, Plat, Jenis, Tanggal(YYYY-MM-DD), Nominal.');
+          return;
+        }
+
+        const replace = confirm(
+          'Import CSV selesai dibaca.\n\n' +
+          '- Baris valid: ' + newItems.length + '\n' +
+          '- Baris dilewati: ' + skipped + '\n\n' +
+          'OK = GANTI SEMUA data lama\n' +
+          'Cancel = TAMBAH ke bawah data yang sudah ada'
+        );
+
+        if (replace) {
+          reminders = newItems;
+        } else {
+          reminders = reminders.concat(newItems);
+        }
+
+        saveData();
+        renderTable();
+        alert('Import selesai. Total data sekarang: ' + reminders.length);
+      };
+
+      reader.readAsText(file, 'utf-8');
+    }
+
+    function exportSoonCsv() {
+      const lines = ['Perusahaan,Unit,Plat,Jenis,Kategori,Jatuh Tempo,Sisa Hari,Status,Nominal'];
+      let totalNominal = 0;
+
+      reminders.forEach(r => {
+        const days = calculateDaysRemaining(r.dueDate);
+        if (days === null) return;
+        if (days > 60) return;
+
+        let kategori;
+        if (days < 0) kategori = 'TELAT';
+        else if (days <= 30) kategori = '≤ 30 HARI';
+        else kategori = '31–60 HARI';
+
+        const statusInfo = getStatusInfo(days);
+        const amt = Number(r.amount || 0);
+        if (!isNaN(amt)) totalNominal += amt;
+
+        const row = [
+          '"KALLA TRANSPORT & LOGISTICS"',
+          `"${(r.unitName || '').replace(/"/g,'""')}"`,
+          `"${(r.plateNumber || '').replace(/"/g,'""')}"`,
+          `"${(r.docType || '').replace(/"/g,'""')}"`,
+          `"${kategori}"`,
+          `"${formatDateId(r.dueDate)}"`,
+          `"${days}"`,
+          `"${statusInfo.label}"`,
+          `"${amt}"`
+        ].join(',');
+        lines.push(row);
+      });
+
+      if (lines.length === 1) {
+        alert('Tidak ada unit TELAT / ≤60 hari bro.');
+        return;
+      }
+
+      lines.push(`"KALLA TRANSPORT & LOGISTICS","GRAND TOTAL NOMINAL",,,,,,,"${totalNominal}"`);
+
+      const blob = new Blob([lines.join('\r\n')], { type:'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'TIM_LOGISTIK_reminder_TELAT_<=60hari.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function exportSoonPdf() {
+      const items = reminders
+        .map(r => ({ ...r, days: calculateDaysRemaining(r.dueDate) }))
+        .filter(r => r.days !== null && r.days <= 60);
+
+      if (!items.length) {
+        alert('Tidak ada unit TELAT / ≤60 hari bro.');
+        return;
+      }
+
+      const buckets = [
+        { key: 'TELAT', label: 'TELAT (LEBIH DARI JATUH TEMPO)', filter: d => d < 0 },
+        { key: 'LE30',  label: '≤ 30 HARI',                      filter: d => d >= 0 && d <= 30 },
+        { key: '31_60', label: '31–60 HARI',                    filter: d => d >= 31 && d <= 60 }
+      ];
+
+      let sectionsHtml = '';
+      let grandTotalNominal = 0;
+
+      buckets.forEach(bucket => {
+        const arr = items
+          .filter(r => bucket.filter(r.days))
+          .sort((a,b) => new Date(a.dueDate) - new Date(b.dueDate));
+
+        if (!arr.length) return;
+
+        let rows = '';
+        let subTotal = 0;
+
+        arr.forEach((r, idx) => {
+          const statusInfo = getStatusInfo(r.days);
+          const amt = Number(r.amount || 0);
+          if (!isNaN(amt)) subTotal += amt;
+
+          let rowClass = '';
+          if (r.days < 0) rowClass = 'row-late';
+          else if (r.days <= 30) rowClass = 'row-urgent';
+          else if (r.days <= 60) rowClass = 'row-warning';
+
+          rows += `
+            <tr class="${rowClass}">
+              <td>${idx + 1}</td>
+              <td>${escapeHtml(r.unitName || '')}</td>
+              <td>${escapeHtml(r.plateNumber || '')}</td>
+              <td>${escapeHtml(r.docType || '')}</td>
+              <td>${formatDateId(r.dueDate)}</td>
+              <td>${r.days}</td>
+              <td>${statusInfo.label}</td>
+              <td>${formatRupiah(amt)}</td>
+            </tr>`;
+        });
+
+        grandTotalNominal += subTotal;
+
+        rows += `
+          <tr>
+            <td colspan="7" style="text-align:right;font-weight:bold;">Total Nominal ${bucket.label}</td>
+            <td style="font-weight:bold;">${formatRupiah(subTotal)}</td>
+          </tr>`;
+
+        sectionsHtml += `
+          <h2 class="section-title">${bucket.label}</h2>
+          <table class="section-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Unit</th>
+                <th>Plat</th>
+                <th>Jenis</th>
+                <th>Jatuh Tempo</th>
+                <th>Sisa Hari</th>
+                <th>Status</th>
+                <th>Nominal (Rp)</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>`;
+      });
+
+      const grandTotalText = formatRupiah(grandTotalNominal);
+
+      const today = new Date();
+      const dateStr = String(today.getDate()).padStart(2,'0') + '-' +
+                      String(today.getMonth()+1).padStart(2,'0') + '-' +
+                      today.getFullYear();
+
+      const logoImg = logoDataUrl
+        ? `<img src="${logoDataUrl}" style="height:60px;margin-right:10px;object-fit:contain;border-radius:12px;border:1px solid #e5e7eb;padding:4px;" />`
+        : '';
+
+      const win = window.open('', '_blank');
+      win.document.write(`
+        <html><head><meta charset="UTF-8" />
+        <title>Reminder TELAT & ≤60 hari - KALLA TRANSPORT & LOGISTICS</title>
+        <style>
+          body{font-family:Arial,sans-serif;margin:0;padding:16px;}
+          .header{display:flex;align-items:center;border-bottom:2px solid #111827;padding-bottom:8px;margin-bottom:12px;}
+          .brand{display:flex;align-items:center;gap:10px;}
+          h1{margin:0;font-size:22px;letter-spacing:1px;}
+          .meta{font-size:12px;color:#4b5563;margin-top:4px;}
+          .section-title{
+            margin:16px 0 6px 0;font-size:14px;font-weight:700;
+            text-transform:uppercase;color:#111827;border-left:4px solid #111827;padding-left:6px;
+          }
+          .section-table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:8px;}
+          .section-table th,.section-table td{padding:4px 6px;border:1px solid #d1d5db;text-align:left;}
+          .section-table thead{background:#111827;color:#fff;}
+          .grand-total{margin-top:12px;font-weight:bold;font-size:13px;}
+
+          .row-late    { background:#fee2e2; }
+          .row-urgent  { background:#fef3c7; }
+          .row-warning { background:#fffbeb; }
+        </style></head>
+        <body>
+          <div class="header">
+            <div class="brand">
+              ${logoImg}
+              <div>
+                <h1>KALLA TRANSPORT & LOGISTICS</h1>
+                <div class="meta">
+                  Laporan Reminder Pajak / Plat / KIR / SIO<br/>
+                  Unit TELAT + ≤ 60 Hari • Tanggal export: ${dateStr}
+                </div>
+              </div>
+            </div>
+          </div>
+          ${sectionsHtml}
+          <div class="grand-total">
+            GRAND TOTAL NOMINAL (TELAT + ≤ 60 hari): ${grandTotalText}
+          </div>
+        </body></html>`);
+      win.document.close();
+      win.focus();
+      win.print();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadLogo();
+      loadData();
+      document.getElementById('logoInput').addEventListener('change', handleLogoChange);
+      document.getElementById('csvInput').addEventListener('change', handleCsvUpload);
+      document.getElementById('reminderForm').addEventListener('submit', handleSubmit);
+      document.getElementById('cancelEditBtn').addEventListener('click', resetForm);
+      document.getElementById('clearDataBtn').addEventListener('click', clearAllData);
+      document.getElementById('searchInput').addEventListener('input', renderTable);
+      document.getElementById('exportSoonCsvBtn').addEventListener('click', exportSoonCsv);
+      document.getElementById('exportSoonPdfBtn').addEventListener('click', exportSoonPdf);
+
+      renderTable();
+      initialAlertIfNeeded();
+    });
+  </script>
+</body>
+</html>
